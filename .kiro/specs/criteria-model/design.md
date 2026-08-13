@@ -21,7 +21,7 @@ One model call. Everything else is deterministic.
 
 | Stage | Does | Enforces |
 |---|---|---|
-| **load criteria** | Parse `criteria.yaml`, validate, compute version hash | AC-1.1, AC-1.2, AC-1.4 |
+| **load criteria** | Parse `criteria.yaml`, validate, compute version hash | AC-1.1, AC-1.2, AC-1.4, AC-1.5 |
 | **accept candidate** | Store raw text verbatim, no normalisation | AC-2.1, AC-2.2, AC-2.3 |
 | **screen** | One call: full candidate text + numbered criteria -> findings by index | AC-3.1, AC-3.2 |
 | **verify** | Substring-check every evidence span against stored candidate text; demote on failure | AC-3.4, AC-3.5, AC-3.7 |
@@ -34,17 +34,20 @@ One model call. Everything else is deterministic.
 ### `criteria.yaml` — the product, not a config file
 
 ```yaml
-version: 1
+schemaVersion: 1  # file-format version, distinct from the content hash of AC-3.6 which is what a screen records
 criteria:
   - id: prod-support
     kind: disqualifying
     statement: >
-      The role is production support, L2/L3, or an on-call escalation function.
+      The role is production support, L2/L3, or an on-call escalation function,
+      unless the role is explicitly architecture-track with prod support named
+      as under 20%.
     rationale: >
       Ruled out at any salary. Past instances produced the hero-complex pattern
       and displaced the architecture track entirely.
     addedOn: 2026-08-03
     source: "Why Applying Feels Dangerous"
+    hasException: true
   - id: onsite-required
     kind: disqualifying
     statement: The role requires relocation or regular onsite presence.
@@ -57,7 +60,7 @@ criteria:
     addedOn: 2026-08-13
 ```
 
-**Order is priority** (AC-1.4). `rationale` is required and load fails without it (AC-1.2).
+**Order is priority** (AC-1.4). `rationale` is required and load fails without it (AC-1.2). `hasException` is author-declared (AC-1.5) — the system never infers it from statement text.
 
 **Version = SHA-256 of the file's bytes**, recorded on every screen (AC-3.6). Not a hand-maintained integer, which drifts.
 
@@ -71,7 +74,7 @@ interface Finding {
   criterionIndex: number          // by index, never restated text
   status: Status
   evidence?: string               // required when status === 'fails'
-  exceptionEvidence?: string      // required when 'holds' via a stated exception
+  exceptionEvidence?: string      // required when criterion has hasException: true and status === 'holds'
   demotedFrom?: Status            // set by verify, never by the model
   demotionReason?: string
 }
@@ -107,7 +110,7 @@ Findings come back **by criterion index**, never as restated statements. Restate
 |---|---|
 | A refusal names a quoted sentence that really appears in the candidate | **Code** — substring check (AC-3.4) |
 | A claimed quote that isn't in the source cannot cause a refusal | **Code** — demotion to `indeterminate` (AC-3.5) |
-| An exception cannot rescue a candidate without a quote | **Code** — AC-3.7 |
+| An exception cannot rescue a candidate without a quote, and the trigger is not the model's to decide | **Code** — AC-1.5, AC-3.7 |
 | The verdict is one of exactly two values | **Code** — the type has no third |
 | Nothing can be recommended | **Code** — no field to populate (AC-5.2) |
 | Which criterion decided | **Code** — author-declared order (AC-5.4) |
@@ -186,4 +189,4 @@ Kiro generates the tasks; these are the section boundaries. 🔧 = pure code, no
 
 **Eight of ten need no API key.** The key-dependent work is §5 and §10 only.
 
-**Cut order if time runs short:** §9 → §8's second shape → nothing else. §§1–7 are the app.
+**Cut order if time runs short:** §9 (History) is the only cuttable section, and **cutting it forfeits AC-7.1, AC-7.2 and AC-7.3** — say so rather than shipping it quietly. Nothing else is cuttable. §§1–8 are the app, and §8's `NO_DISQUALIFIER_FOUND` shape is the demo — a tool that refuses to say yes when it has nothing to refuse on is the entire premise, so it is never cut.

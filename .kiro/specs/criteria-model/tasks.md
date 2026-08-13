@@ -2,12 +2,14 @@
 
 ## § 1 — Skeleton 🔧
 
-- [ ] **1.1** Initialise `package.json` with `"type": "module"`, project name, and no dependencies yet. — AC: *NF-1* (plain files), engineering rule ESM-only.
-- [ ] **1.2** Create the on-disk directory layout: `candidates/`, `screens/`, and root-level `criteria.yaml` placeholder. — AC: *NF-1*
+> Tasks marked *scaffolding* satisfy no acceptance criterion. They are listed because the work exists, not because it is traceable.
+
+- [ ] **1.1** Initialise `package.json` with `"type": "module"`, project name, and no dependencies yet. — AC: *none (scaffolding)*
+- [ ] **1.2** Create the on-disk directory layout: `candidates/`, `screens/`, and root-level `criteria.yaml` placeholder. — AC: *none (scaffolding)*
 - [ ] **1.3** Create `.env.example` with commented placeholder for the API key. — AC: *NF-5*
 - [ ] **1.4** Create the SQLite schema (migrations or init script): tables for `screens`, `findings`, `criteria_snapshots`. — AC: *AC-7.1*
-- [ ] **1.5** Stub the CLI entry point (`bin/apophasis.js` or similar) with subcommands: `screen`, `history`, `criteria validate`. Wire no logic yet. — AC: *NF-1*
-- [ ] **1.6** Configure Vitest (ESM). Confirm a trivial test passes with `vitest --run`. — AC: engineering rule ESM-only.
+- [ ] **1.5** Stub the CLI entry point (`bin/apophasis.js` or similar) with subcommands: `screen`, `history`, `criteria validate`. Wire no logic yet. — AC: *none (scaffolding)*
+- [ ] **1.6** Configure Vitest (ESM). Confirm a trivial test passes with `vitest --run`. — AC: *none (scaffolding)*
 
 ## § 2 — Criteria model 🔧
 
@@ -26,10 +28,11 @@
 
 ## § 4 — Model interface 🔧
 
-- [ ] **4.1** Create a provider module that reads the API key from environment. — AC: *NF-2*
+- [ ] **4.1** Create a provider module that reads the API key from environment. — AC: *none (scaffolding)*
 - [ ] **4.2** Implement "fail clean" behaviour: when no API key is configured, the CLI exits with a clear error message explaining what is needed. No fallback, no demo mode, no stub client reachable from the CLI. — AC: *NF-3*
 - [ ] **4.3** Create a `RecordingClient` wrapper that captures request/response pairs to disk as JSON fixtures, labelled as offline test data only. — AC: *NF-3* (labelling requirement)
 - [ ] **4.4** Write tests: missing key produces the expected error and exit code; `RecordingClient` writes a fixture file; fixture files carry the "offline test suite only" label. — AC: *NF-3*
+- [ ] **4.5** Write a test that asserts no CLI code path can construct or reach the `RecordingClient` or any replay client. The test fails if any CLI entry point can import or instantiate it. — AC: *NF-6*
 
 ## § 5 — The screen prompt 🤖
 
@@ -83,6 +86,4 @@
 
 ## Cut order (if time runs short)
 
-1. **§ 9** (History) — drop first. Screens still work; persistence is deferred.
-2. **§ 8's second shape** (NO_DISQUALIFIER_FOUND rendering) — REFUSED shape is the priority.
-3. **Nothing else.** §§ 1–7 are the app. They ship together or not at all.
+**Cut order if time runs short:** §9 (History) is the only cuttable section, and **cutting it forfeits AC-7.1, AC-7.2 and AC-7.3** — say so rather than shipping it quietly. Nothing else is cuttable. §§1–8 are the app, and §8's `NO_DISQUALIFIER_FOUND` shape is the demo — a tool that refuses to say yes when it has nothing to refuse on is the entire premise, so it is never cut.

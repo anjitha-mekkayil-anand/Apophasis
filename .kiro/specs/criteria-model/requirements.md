@@ -22,10 +22,11 @@ As a user, I want every screen kept with its criteria version and evidence, so I
 
 ### AC-1 — criteria are typed, and the type is load-bearing
 
-- **AC-1.1** The system SHALL store each criterion with: a stable `id`, a `statement`, a `kind` of either `disqualifying` or `preference`, a `rationale`, an `addedOn` date, and an optional `source`.
+- **AC-1.1** The system SHALL store each criterion with: a stable `id`, a `statement`, a `kind` of either `disqualifying` or `preference`, a `rationale`, an `addedOn` date, an optional `source`, and an optional `hasException` boolean defaulting to `false`.
 - **AC-1.2** WHEN a criterion is loaded without a `rationale`, the system SHALL reject the criteria file with an error naming the criterion. *A rule with no stated reason cannot be re-examined later, which is the failure this app exists to prevent.*
 - **AC-1.3** The system SHALL treat `disqualifying` as binary and fatal, and `preference` as non-fatal, and SHALL NOT provide any mechanism for a `preference` to become fatal by accumulation.
 - **AC-1.4** The criteria file SHALL be an ordered list, and that order SHALL be author-declared priority.
+- **AC-1.5** WHERE a criterion's `statement` contains an exception clause, the author SHALL set `hasException: true`. The system SHALL NOT attempt to detect exception clauses from statement text.
 
 ### AC-2 — the candidate
 
@@ -41,9 +42,9 @@ As a user, I want every screen kept with its criteria version and evidence, so I
 - **AC-3.4** The system SHALL verify `evidence` by substring match against the stored candidate text **in code**, not by trusting the model's assertion.
 - **AC-3.5** IF the substring check fails, the system SHALL demote the finding to `indeterminate` and record the demotion reason. *A claimed quote that is not in the source is a fabrication, and the app must not act on one.*
 - **AC-3.6** The system SHALL record which criteria version was in force for the screen.
-- **AC-3.7** WHERE a criterion's statement contains an exception and a finding is `holds` **because that exception applied**, the system SHALL require an `exceptionEvidence` field containing a verbatim span from the candidate text, verified by substring match as in AC-3.4, and SHALL demote the finding to `indeterminate` if the check fails.
+- **AC-3.7** WHERE a criterion has `hasException: true` AND a finding for it is `holds`, the system SHALL require an `exceptionEvidence` field containing a verbatim span from the candidate text, verified by substring match as in AC-3.4. IF `exceptionEvidence` is absent, empty, or fails the substring check, the system SHALL demote the finding to `indeterminate` and record the demotion reason.
 
-*AC-3.7 closes an asymmetry that AC-3.3 alone leaves open: refusing requires a quote, but rescuing would not have. "The exception applied" is exactly where a model is generous, and it is the direction that costs a candidate you would have refused.*
+*This closes an asymmetry that AC-3.3 alone leaves open: refusing requires a quote, but rescuing would not have. "The exception applied" is where a model is generous, and it is the direction that costs a candidate you would have refused. The trigger is author-declared rather than inferred, because inferring it would put a judgement back in the model that the governing principle keeps in code.*
 
 ### AC-4 — `indeterminate` is not a pass
 
@@ -80,6 +81,7 @@ As a user, I want every screen kept with its criteria version and evidence, so I
 - **NF-3** The system SHALL fail clean and explain itself when no API key is configured. **No fallback, no demo mode, no stub client reachable from the CLI.** *Presenting simulated functionality as working is a disqualification matter; recorded fixtures exist only as an offline test suite and SHALL be labelled as such.*
 - **NF-4** Cost per screen SHALL be measured and documented in the README, alongside rate limits.
 - **NF-5** No API key SHALL be committed. `.env.example` in the repo; the working test credential goes on the submission form.
+- **NF-6** No recording or replay client SHALL be reachable from any CLI code path. Fixture capture SHALL be available only to the test suite. *A stub that can be reached at runtime is a demo mode regardless of what it is called, and presenting simulated functionality as working is a disqualification matter.*
 
 ## Deliberately out of scope — the cut list goes in the README
 
