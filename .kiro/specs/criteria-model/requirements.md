@@ -27,6 +27,10 @@ As a user, I want every screen kept with its criteria version and evidence, so I
 - **AC-1.3** The system SHALL treat `disqualifying` as binary and fatal, and `preference` as non-fatal, and SHALL NOT provide any mechanism for a `preference` to become fatal by accumulation.
 - **AC-1.4** The criteria file SHALL be an ordered list, and that order SHALL be author-declared priority.
 - **AC-1.5** WHERE a criterion's `statement` contains an exception clause, the author SHALL set `hasException: true`. The system SHALL NOT attempt to detect exception clauses from statement text. *This prohibition applies to triggering AC-3.7. A non-blocking advisory warning at validation time — noting that a statement appears to contain an exception clause while `hasException` is unset — is permitted and SHALL NOT alter the finding, the verdict, or whether `exceptionEvidence` is required.*
+- **AC-1.6** Each criterion SHALL have a unique `id`. The system SHALL reject a criteria file containing duplicate ids, naming the offending id. *Findings reference criteria by index, so a duplicate id never breaks the pipeline — which is why it would surface only when someone reads a stored screen months later and cannot tell which criterion is meant.*
+- **AC-1.7** The system SHALL reject a criteria file in which any criterion has a missing or empty `statement`. *A criterion with no statement is not a rule.*
+- **AC-1.8** WHEN the criteria file contains no `disqualifying` criteria, `criteria validate` SHALL emit a non-blocking advisory: *"No disqualifying criteria found. Every screen will return NO_DISQUALIFIER_FOUND."* This SHALL NOT fail validation.
+- **AC-1.9** The system SHALL reject a criteria file whose `schemaVersion` is missing or is any value other than those it recognises, naming the value found and the versions supported.
 
 ### AC-2 — the candidate
 

@@ -10,6 +10,7 @@
  */
 
 import { loadCriteria, CriteriaValidationError } from './criteria.js';
+import { acceptCandidate } from './candidate.js';
 
 const NOT_IMPLEMENTED_PREFIX = '[NOT IMPLEMENTED]';
 
@@ -67,6 +68,37 @@ async function criteriaValidate(filePath: string): Promise<void> {
   }
 }
 
+/**
+ * screen — accepts a candidate file and stores it, then stops.
+ *
+ * The rest of the pipeline (model call, verification, verdict, render, record)
+ * is not yet implemented. The output clearly states this so nothing it prints
+ * can be mistaken for a verdict.
+ */
+async function screenAccept(filePath: string, label: string): Promise<void> {
+  try {
+    const result = await acceptCandidate(filePath, label);
+    console.log(`Candidate accepted.`);
+    console.log(`  ID: ${result.id}`);
+    console.log(`  Stored: ${result.candidateFile}`);
+    console.log(`  Label: ${result.metadata.label}`);
+    console.log(`  Ingested at: ${result.metadata.ingestedAt}`);
+    console.log(`  Byte length: ${result.metadata.byteLength}`);
+    console.error(
+      `\n${NOT_IMPLEMENTED_PREFIX} Screening pipeline is not yet implemented. ` +
+      `The candidate has been stored but no criteria evaluation, verification, ` +
+      `verdict, or record has been produced. This is not a result.`
+    );
+    process.exit(1);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error(err.message);
+      process.exit(1);
+    }
+    throw err;
+  }
+}
+
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
@@ -77,9 +109,18 @@ async function main(): Promise<void> {
   const command = args[0];
 
   switch (command) {
-    case 'screen':
-      notImplemented('screen');
+    case 'screen': {
+      const filePath = args[1];
+      const label = args[2];
+      if (!filePath || !label) {
+        console.error('Usage: apophasis screen <file> <label>');
+        console.error('  <file>   Path to a .txt or .md candidate file');
+        console.error('  <label>  A short label for this candidate (e.g. "senior-engineer-acme")');
+        process.exit(1);
+      }
+      await screenAccept(filePath, label);
       break;
+    }
     case 'history':
       notImplemented('history');
       break;
