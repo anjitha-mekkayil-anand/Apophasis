@@ -67,7 +67,9 @@ As a user, I want every screen kept with its criteria version and evidence, so I
 - **AC-5.3** WHEN one or more `disqualifying` findings are `fails`, the verdict SHALL be `REFUSED`.
 - **AC-5.4** WHEN a verdict is `REFUSED` and more than one disqualifying criterion failed, the system SHALL name **all** of them and SHALL designate exactly one as the **deciding criterion**, chosen by author-declared order (AC-1.4) — **never by model judgement**.
 - **AC-5.5** WHEN no disqualifying criterion fails, the verdict SHALL be `NO_DISQUALIFIER_FOUND`, and the rendered output SHALL state in plain language that this is **not a recommendation**.
-- **AC-5.6** The system SHALL NOT compute, store or display any aggregate number derived from findings.
+- **AC-5.6** The system SHALL NOT compute, store or display any number that rates, ranks, scores or otherwise measures the candidate, including weighted totals over criteria and any figure derived from `preference` findings. Counts describing the **state of the screen itself** — how many criteria were evaluated, how many could not be — are permitted and required by AC-4.2.
+
+*The prohibition is on measuring the candidate, not on counting. A screen that cannot say how much of itself failed to run is less honest, not more.*
 - **AC-5.7** The prompt sent to the model SHALL NOT contain the tokens `REFUSED` or `NO_DISQUALIFIER_FOUND`, and SHALL NOT ask the model whether to refuse, which criterion decides, how good the candidate is, or for any number. *The governing decision — the model produces findings, code produces the verdict — is stated as a criterion here so that it is testable rather than merely intended.*
 
 ### AC-6 — preferences surface as residual risk, never as a total
