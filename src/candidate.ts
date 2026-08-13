@@ -14,6 +14,7 @@
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join, extname } from 'node:path';
+import { CandidateAcceptError } from './errors.js';
 
 const CANDIDATES_DIR = 'candidates';
 
@@ -100,7 +101,7 @@ export async function acceptCandidate(
   // Validate extension — only .txt and .md accepted
   const ext = extname(filePath).toLowerCase();
   if (!ALLOWED_EXTENSIONS.has(ext)) {
-    throw new Error(
+    throw new CandidateAcceptError(
       `Rejected: "${filePath}" has extension "${ext}". ` +
       `Only .txt and .md files are accepted.`
     );
