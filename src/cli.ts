@@ -7,10 +7,9 @@
  *   screen             — screen a candidate against criteria
  *   history            — list or read past screens
  *   criteria validate  — validate the criteria file
- *
- * All subcommands are stubs in §1. They exit with a clear "not implemented"
- * message that cannot be mistaken for a real result.
  */
+
+import { loadCriteria, CriteriaValidationError } from './criteria.js';
 
 const NOT_IMPLEMENTED_PREFIX = '[NOT IMPLEMENTED]';
 
@@ -33,7 +32,42 @@ function usage(): never {
   process.exit(1);
 }
 
-function main(): void {
+/**
+ * criteria validate — the first subcommand that does real work.
+ *
+ * Loads and validates criteria.yaml, prints the result to stdout on success.
+ * Validation errors go to stderr and exit non-zero.
+ * Advisories go to stderr and exit zero (they are not failures).
+ */
+async function criteriaValidate(filePath: string): Promise<void> {
+  try {
+    const result = await loadCriteria(filePath);
+
+    // Print advisories to stderr — they are non-blocking (AC-1.5)
+    for (const advisory of result.advisories) {
+      console.error(`[ADVISORY] ${advisory.criterionId}: ${advisory.message}`);
+    }
+
+    // Success output to stdout
+    console.log(`Criteria file is valid.`);
+    console.log(`  Criteria count: ${result.criteria.length}`);
+    console.log(`  Version (SHA-256): ${result.version}`);
+    console.log(`  Disqualifying: ${result.criteria.filter(c => c.kind === 'disqualifying').length}`);
+    console.log(`  Preference: ${result.criteria.filter(c => c.kind === 'preference').length}`);
+  } catch (err: unknown) {
+    if (err instanceof CriteriaValidationError) {
+      console.error(`Validation failed: ${err.message}`);
+      process.exit(1);
+    }
+    if (err instanceof Error && 'code' in err && (err as NodeJS.ErrnoException).code === 'ENOENT') {
+      console.error(`File not found: ${filePath}`);
+      process.exit(1);
+    }
+    throw err;
+  }
+}
+
+async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
@@ -51,7 +85,8 @@ function main(): void {
       break;
     case 'criteria':
       if (args[1] === 'validate') {
-        notImplemented('criteria validate');
+        const filePath = args[2] ?? 'criteria.yaml';
+        await criteriaValidate(filePath);
       } else {
         console.error(`Unknown criteria subcommand: ${args[1] ?? '(none)'}`);
         usage();

@@ -92,6 +92,39 @@ interface Verdict {
 
 The comment in the type stays in the shipped code.
 
+**`Verdict` is the computation; `ScreenFrontmatter` is the record.** Anything about *this run* — label, timestamp, criteria version, candidate reference — belongs to the record. `Verdict` holds only what is derived from the findings. A §7 or §8 implementor needing a timestamp reaches for the record, never for a new field on `Verdict`.
+
+```ts
+/**
+ * A single entry in screens/index.json.
+ * This is a convenience index, never a source of truth.
+ * If it disagrees with the markdown files, the markdown wins.
+ */
+interface ScreenIndexEntry {
+  id: string
+  label: string
+  verdict: 'REFUSED' | 'NO_DISQUALIFIER_FOUND'
+  criteriaVersion: string
+  screenedAt: string  // ISO 8601
+}
+
+/**
+ * The YAML frontmatter schema for screens/<id>.md.
+ * This IS the record — everything AC-7.1 requires lives here.
+ */
+interface ScreenFrontmatter {
+  id: string
+  label: string
+  candidateFile: string           // relative path to candidates/<id>.txt
+  criteriaVersion: string         // SHA-256 of criteria.yaml bytes at screen time
+  screenedAt: string              // ISO 8601
+  verdict: 'REFUSED' | 'NO_DISQUALIFIER_FOUND'
+  decidingCriterionIndex?: number
+  incomplete: boolean
+  findings: Finding[]
+}
+```
+
 ## What the model is asked, and what it is not
 
 **Asked:** for each numbered criterion, does the candidate violate it — `fails`, `holds`, or `indeterminate` — and for `fails`, the exact sentence from the candidate that shows it.
