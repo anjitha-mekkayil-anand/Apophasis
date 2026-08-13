@@ -71,7 +71,7 @@ As a user, I want every screen kept with its criteria version and evidence, so I
 
 ### AC-7 — history
 
-- **AC-7.1** The system SHALL persist every screen with its candidate text, criteria version, findings, evidence and verdict.
+- **AC-7.1** The system SHALL persist every screen with a **reference to its candidate text**, the criteria version, findings, evidence and verdict. *The candidate text is stored as its own file and referenced by path rather than inlined, because a candidate containing a YAML document delimiter would corrupt the record.*
 - **AC-7.2** A stored screen SHALL be readable without the application.
 - **AC-7.3** The system SHALL NOT delete or overwrite a stored screen. A re-screen SHALL create a new record.
 

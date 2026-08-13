@@ -24,7 +24,7 @@
 ## § 3 — Candidate accept 🔧
 
 - [ ] **3.1** Implement candidate ingestion: read a `.txt` or `.md` file, store raw text verbatim in `candidates/<id>.txt`. No modification, no summarisation, no truncation. — AC: *AC-2.1*, *AC-2.2*
-- [ ] **3.2** Record the candidate's ingest timestamp (ISO 8601) and a user-supplied label in the database. — AC: *AC-2.3*
+- [ ] **3.2** Store the candidate's ingest timestamp (ISO 8601) and user-supplied label alongside the candidate file, so a screen record can reference them. — AC: *AC-2.3*
 - [ ] **3.3** Wire the `screen` CLI subcommand to accept a file path and label argument. — AC: *AC-2.1*
 - [ ] **3.4** Write tests: raw text survives round-trip unchanged; timestamp and label are stored; non-text file is rejected. — AC: *AC-2.1*, *AC-2.2*, *AC-2.3*
 
@@ -44,7 +44,7 @@
 - [ ] **5.4** Parse the model response into an array of `Finding` objects indexed by criterion position. — AC: *AC-3.1*, *AC-3.2*
 - [ ] **5.5** Write tests using recorded fixtures: model returns expected findings; a discriminating pair (one that should fail, one that should hold) is included. No test may assert an empty result. — AC: *AC-3.1*, *AC-3.2*, engineering rule 3.
 - [ ] **5.6** Where a criterion is marked `hasException: true`, the prompt SHALL instruct the model that if it returns `holds` for that criterion **because the stated exception applied**, it must supply `exceptionEvidence` — the verbatim sentence from the candidate showing the exception is met. — AC: *AC-3.7*
-- [ ] **5.7** Write a test with a `hasException` criterion and a candidate that meets the exception: the model supplies `exceptionEvidence`, and §6 verification passes rather than demoting. — AC: *AC-3.7*
+- [ ] **5.7** 🤖 Using a live model call (or a §10 fixture once one exists), assert that for a `hasException` criterion whose exception is met by the candidate, the model supplies `exceptionEvidence` and §6 verification passes rather than demoting. **A stub must not stand in** — a stub tests verification, not elicitation. — AC: *AC-3.7*
 - [ ] **5.8** Write a test asserting the rendered prompt contains neither verdict token and no request for a rating, score or overall judgement. — AC: *AC-5.7*
 
 ## § 6 — Verification 🔧
