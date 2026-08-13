@@ -26,7 +26,7 @@ As a user, I want every screen kept with its criteria version and evidence, so I
 - **AC-1.2** WHEN a criterion is loaded without a `rationale`, the system SHALL reject the criteria file with an error naming the criterion. *A rule with no stated reason cannot be re-examined later, which is the failure this app exists to prevent.*
 - **AC-1.3** The system SHALL treat `disqualifying` as binary and fatal, and `preference` as non-fatal, and SHALL NOT provide any mechanism for a `preference` to become fatal by accumulation.
 - **AC-1.4** The criteria file SHALL be an ordered list, and that order SHALL be author-declared priority.
-- **AC-1.5** WHERE a criterion's `statement` contains an exception clause, the author SHALL set `hasException: true`. The system SHALL NOT attempt to detect exception clauses from statement text.
+- **AC-1.5** WHERE a criterion's `statement` contains an exception clause, the author SHALL set `hasException: true`. The system SHALL NOT attempt to detect exception clauses from statement text. *This prohibition applies to triggering AC-3.7. A non-blocking advisory warning at validation time — noting that a statement appears to contain an exception clause while `hasException` is unset — is permitted and SHALL NOT alter the finding, the verdict, or whether `exceptionEvidence` is required.*
 
 ### AC-2 — the candidate
 
@@ -62,6 +62,7 @@ As a user, I want every screen kept with its criteria version and evidence, so I
 - **AC-5.4** WHEN a verdict is `REFUSED` and more than one disqualifying criterion failed, the system SHALL name **all** of them and SHALL designate exactly one as the **deciding criterion**, chosen by author-declared order (AC-1.4) — **never by model judgement**.
 - **AC-5.5** WHEN no disqualifying criterion fails, the verdict SHALL be `NO_DISQUALIFIER_FOUND`, and the rendered output SHALL state in plain language that this is **not a recommendation**.
 - **AC-5.6** The system SHALL NOT compute, store or display any aggregate number derived from findings.
+- **AC-5.7** The prompt sent to the model SHALL NOT contain the tokens `REFUSED` or `NO_DISQUALIFIER_FOUND`, and SHALL NOT ask the model whether to refuse, which criterion decides, how good the candidate is, or for any number. *The governing decision — the model produces findings, code produces the verdict — is stated as a criterion here so that it is testable rather than merely intended.*
 
 ### AC-6 — preferences surface as residual risk, never as a total
 

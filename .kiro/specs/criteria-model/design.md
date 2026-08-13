@@ -102,6 +102,8 @@ Findings come back **by criterion index**, never as restated statements. Restate
 
 `indeterminate` is offered explicitly as a first-class answer, with the prompt stating that it is the correct response when the candidate text does not address the criterion. **A model with no way to say "I don't know" will guess**, and here a guess in the `holds` direction is a false clean.
 
+Criteria marked `hasException: true` are presented to the model with their exception flag, and `exceptionEvidence` is requested for a `holds` on those criteria only. This is what makes AC-3.7 enforceable — without the instruction, §6 verification would demote every exception-based `holds` to `indeterminate` because no evidence would be supplied.
+
 ## Enforced in code vs asked of the model
 
 *This table goes in the README verbatim.*
@@ -117,6 +119,7 @@ Findings come back **by criterion index**, never as restated statements. Restate
 | No aggregate number exists anywhere | **Code** — never computed (AC-5.6) |
 | A clean verdict cannot hide an unevaluated disqualifier | **Code** — `incomplete` flag (AC-4.3) |
 | Whether a specific rule is violated | **Model** — the one judgement it makes |
+| The model is never asked to decide the outcome | **Code** — AC-5.7, asserted against the rendered prompt |
 
 ## On-disk layout
 

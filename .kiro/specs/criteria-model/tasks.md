@@ -18,6 +18,7 @@
 - [ ] **2.3** Validate that every criterion has a non-empty `rationale`. On failure, reject the file with an error naming the offending criterion `id`. — AC: *AC-1.2*
 - [ ] **2.4** Compute criteria version as SHA-256 of the file's raw bytes. — AC: *AC-3.6*
 - [ ] **2.5** Write tests: valid file loads; missing `rationale` rejects naming the criterion; invalid `kind` rejects; order is preserved. — AC: *AC-1.1*, *AC-1.2*, *AC-1.4*
+- [ ] **2.6** In `criteria validate`, emit a non-blocking advisory when a statement appears to contain an exception clause (e.g. "unless", "except where", "other than") while `hasException` is unset. Advisory only: it SHALL NOT fail validation or alter any downstream behaviour. — AC: *AC-1.5*
 
 ## § 3 — Candidate accept 🔧
 
@@ -36,11 +37,14 @@
 
 ## § 5 — The screen prompt 🤖
 
-- [ ] **5.1** Build the prompt template: full candidate text + numbered criteria list. The model is asked only whether each criterion is violated (`fails`, `holds`, `indeterminate`) and, for `fails`, the exact verbatim span from the candidate. — AC: *AC-3.1*, *AC-3.2*, *AC-3.3*
+- [ ] **5.1** Build the prompt template: full candidate text + numbered criteria list (each criterion carrying its `hasException` flag). The model is asked only whether each criterion is violated (`fails`, `holds`, `indeterminate`) and, for `fails`, the exact verbatim span from the candidate. — AC: *AC-3.1*, *AC-3.2*, *AC-3.3*
 - [ ] **5.2** Offer `indeterminate` explicitly in the prompt as the correct response when the candidate text does not address the criterion. — AC: *AC-3.2*, *AC-4.1*
-- [ ] **5.3** Ensure the prompt never contains the tokens `REFUSED`, `NO_DISQUALIFIER_FOUND`, and never asks the model whether to refuse or how good the candidate is. — AC: *AC-5.1*, *AC-5.2*
+- [ ] **5.3** Ensure the prompt never contains the tokens `REFUSED`, `NO_DISQUALIFIER_FOUND`, and never asks the model whether to refuse or how good the candidate is. — AC: *AC-5.7*
 - [ ] **5.4** Parse the model response into an array of `Finding` objects indexed by criterion position. — AC: *AC-3.1*, *AC-3.2*
 - [ ] **5.5** Write tests using recorded fixtures: model returns expected findings; a discriminating pair (one that should fail, one that should hold) is included. No test may assert an empty result. — AC: *AC-3.1*, *AC-3.2*, engineering rule 3.
+- [ ] **5.6** Where a criterion is marked `hasException: true`, the prompt SHALL instruct the model that if it returns `holds` for that criterion **because the stated exception applied**, it must supply `exceptionEvidence` — the verbatim sentence from the candidate showing the exception is met. — AC: *AC-3.7*
+- [ ] **5.7** Write a test with a `hasException` criterion and a candidate that meets the exception: the model supplies `exceptionEvidence`, and §6 verification passes rather than demoting. — AC: *AC-3.7*
+- [ ] **5.8** Write a test asserting the rendered prompt contains neither verdict token and no request for a rating, score or overall judgement. — AC: *AC-5.7*
 
 ## § 6 — Verification 🔧
 
@@ -86,4 +90,4 @@
 
 ## Cut order (if time runs short)
 
-**Cut order if time runs short:** §9 (History) is the only cuttable section, and **cutting it forfeits AC-7.1, AC-7.2 and AC-7.3** — say so rather than shipping it quietly. Nothing else is cuttable. §§1–8 are the app, and §8's `NO_DISQUALIFIER_FOUND` shape is the demo — a tool that refuses to say yes when it has nothing to refuse on is the entire premise, so it is never cut.
+§9 (History) is the only cuttable section, and **cutting it forfeits AC-7.1, AC-7.2 and AC-7.3** — say so rather than shipping it quietly. Nothing else is cuttable. §§1–8 are the app, and §8's `NO_DISQUALIFIER_FOUND` shape is the demo — a tool that refuses to say yes when it has nothing to refuse on is the entire premise, so it is never cut.
