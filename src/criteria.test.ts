@@ -274,7 +274,7 @@ criteria:
     });
   });
 
-  describe('duplicate id rejection', () => {
+  describe('duplicate id rejection (AC-1.6)', () => {
     it('rejects a file with duplicate criterion ids', () => {
       const yaml = `
 schemaVersion: 1
@@ -303,16 +303,114 @@ criteria:
       expect(() => loadCriteriaFromBuffer(yamlBuffer(yaml))).toThrow(CriteriaValidationError);
     });
 
-    it('rejects a file with an empty criteria array', () => {
+    it('accepts a file with an empty criteria array but emits zero-disqualifier advisory (AC-1.8)', () => {
       const yaml = `
 schemaVersion: 1
 criteria: []
 `;
-      // An empty array is technically valid YAML, but we load it fine — 
-      // it produces zero criteria. Whether this should be rejected is a 
-      // design question (see PR description section 4).
       const result = loadCriteriaFromBuffer(yamlBuffer(yaml));
       expect(result.criteria).toHaveLength(0);
+      expect(result.advisories).toHaveLength(1);
+      expect(result.advisories[0].message).toContain('No disqualifying criteria found');
+    });
+  });
+
+  describe('schemaVersion validation (AC-1.9)', () => {
+    it('rejects when schemaVersion is missing', () => {
+      const yaml = `
+criteria:
+  - id: test
+    kind: disqualifying
+    statement: Test.
+    rationale: Test.
+    addedOn: 2026-08-01
+`;
+      expect(() => loadCriteriaFromBuffer(yamlBuffer(yaml))).toThrow(CriteriaValidationError);
+      expect(() => loadCriteriaFromBuffer(yamlBuffer(yaml))).toThrow(
+        /schemaVersion.*missing/i
+      );
+    });
+
+    it('rejects when schemaVersion is unsupported', () => {
+      const yaml = `
+schemaVersion: 99
+criteria:
+  - id: test
+    kind: disqualifying
+    statement: Test.
+    rationale: Test.
+    addedOn: 2026-08-01
+`;
+      expect(() => loadCriteriaFromBuffer(yamlBuffer(yaml))).toThrow(CriteriaValidationError);
+      expect(() => loadCriteriaFromBuffer(yamlBuffer(yaml))).toThrow(
+        /schemaVersion.*99/
+      );
+    });
+
+    it('accepts schemaVersion 1', () => {
+      const result = loadCriteriaFromBuffer(yamlBuffer(VALID_CRITERIA_YAML));
+      expect(result.criteria).toHaveLength(3);
+    });
+  });
+
+  describe('missing statement rejection (AC-1.7)', () => {
+    it('rejects a criterion with no statement', () => {
+      const yaml = `
+schemaVersion: 1
+criteria:
+  - id: no-statement
+    kind: disqualifying
+    rationale: Has rationale but no statement.
+    addedOn: 2026-08-01
+`;
+      expect(() => loadCriteriaFromBuffer(yamlBuffer(yaml))).toThrow(CriteriaValidationError);
+      expect(() => loadCriteriaFromBuffer(yamlBuffer(yaml))).toThrow(
+        /no-statement.*statement/i
+      );
+    });
+
+    it('rejects a criterion with whitespace-only statement', () => {
+      const yaml = `
+schemaVersion: 1
+criteria:
+  - id: blank-statement
+    kind: preference
+    statement: "   "
+    rationale: Has rationale.
+    addedOn: 2026-08-01
+`;
+      expect(() => loadCriteriaFromBuffer(yamlBuffer(yaml))).toThrow(CriteriaValidationError);
+      expect(() => loadCriteriaFromBuffer(yamlBuffer(yaml))).toThrow(
+        /blank-statement/
+      );
+    });
+  });
+
+  describe('zero disqualifying criteria advisory (AC-1.8)', () => {
+    it('emits advisory when all criteria are preferences', () => {
+      const yaml = `
+schemaVersion: 1
+criteria:
+  - id: pref-one
+    kind: preference
+    statement: Only preferences here.
+    rationale: Testing zero-disqualifier advisory.
+    addedOn: 2026-08-01
+`;
+      const result = loadCriteriaFromBuffer(yamlBuffer(yaml));
+      expect(result.criteria).toHaveLength(1);
+      const zeroAdvisory = result.advisories.find(a =>
+        a.message.includes('No disqualifying criteria found')
+      );
+      expect(zeroAdvisory).toBeDefined();
+    });
+
+    it('does NOT emit advisory when at least one disqualifying criterion exists', () => {
+      const result = loadCriteriaFromBuffer(yamlBuffer(VALID_CRITERIA_YAML));
+      const zeroAdvisory = result.advisories.find(a =>
+        a.message.includes('No disqualifying criteria found')
+      );
+      expect(zeroAdvisory).toBeUndefined();
     });
   });
 });

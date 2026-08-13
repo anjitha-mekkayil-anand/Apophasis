@@ -13,6 +13,9 @@ import type { Criterion, CriteriaFile, Kind } from './types.js';
 
 const VALID_KINDS: readonly Kind[] = ['disqualifying', 'preference'];
 
+/** Recognised schema versions — AC-1.9 */
+const SUPPORTED_SCHEMA_VERSIONS: readonly number[] = [1];
+
 /**
  * Phrases that suggest an exception clause in a criterion statement.
  * Used for the non-blocking advisory in `criteria validate` (AC-1.5).
@@ -77,6 +80,18 @@ export function loadCriteriaFromBuffer(rawBytes: Buffer): CriteriaLoadResult {
     );
   }
 
+  // Validate schemaVersion — AC-1.9
+  if (
+    parsed.schemaVersion === undefined ||
+    parsed.schemaVersion === null ||
+    !SUPPORTED_SCHEMA_VERSIONS.includes(Number(parsed.schemaVersion))
+  ) {
+    throw new CriteriaValidationError(
+      `Unsupported or missing schemaVersion: "${parsed.schemaVersion ?? '(missing)'}". ` +
+      `Supported versions: ${SUPPORTED_SCHEMA_VERSIONS.join(', ')}.`
+    );
+  }
+
   const criteria: Criterion[] = [];
   const advisories: Advisory[] = [];
   const seenIds = new Set<string>();
@@ -91,7 +106,7 @@ export function loadCriteriaFromBuffer(rawBytes: Buffer): CriteriaLoadResult {
       );
     }
 
-    // Check for duplicate ids
+    // Check for duplicate ids — AC-1.6
     if (seenIds.has(raw.id)) {
       throw new CriteriaValidationError(
         `Duplicate criterion id: "${raw.id}" (index ${i}). Each criterion must have a unique id.`
@@ -113,7 +128,7 @@ export function loadCriteriaFromBuffer(rawBytes: Buffer): CriteriaLoadResult {
       );
     }
 
-    // Validate statement exists
+    // Validate statement exists — AC-1.7
     if (!raw.statement || typeof raw.statement !== 'string' || raw.statement.trim() === '') {
       throw new CriteriaValidationError(
         `Criterion "${raw.id}": missing or empty "statement".`
@@ -149,6 +164,15 @@ export function loadCriteriaFromBuffer(rawBytes: Buffer): CriteriaLoadResult {
         }
       }
     }
+  }
+
+  // Advisory: no disqualifying criteria — AC-1.8
+  if (!criteria.some(c => c.kind === 'disqualifying')) {
+    advisories.push({
+      criterionId: '(file)',
+      message:
+        'No disqualifying criteria found. Every screen will return NO_DISQUALIFIER_FOUND.',
+    });
   }
 
   return { criteria, version, advisories };
