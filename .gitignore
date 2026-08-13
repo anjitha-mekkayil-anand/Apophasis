@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+
+# Build output
+dist/
+
+# Application working state
+*.db
+candidates/
+screens/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# IMPORTANT: .kiro/ is NEVER excluded.
+# That directory is required at the repository root and concealing it
+# is a disqualification matter, not a style choice.
