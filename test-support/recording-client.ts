@@ -47,11 +47,13 @@ export interface RecordedFixture {
 export class RecordingClient implements ModelClient {
   private readonly inner: ModelClient;
   private readonly model: string;
+  private readonly fixturesDir: string;
   private callIndex = 0;
 
-  constructor(inner: ModelClient, model: string) {
+  constructor(inner: ModelClient, model: string, fixturesDir: string = FIXTURES_DIR) {
     this.inner = inner;
     this.model = model;
+    this.fixturesDir = fixturesDir;
   }
 
   async complete(prompt: string): Promise<string> {
@@ -65,10 +67,10 @@ export class RecordingClient implements ModelClient {
       model: this.model,
     };
 
-    await mkdir(FIXTURES_DIR, { recursive: true });
+    await mkdir(this.fixturesDir, { recursive: true });
     const fileName = `fixture-${String(this.callIndex).padStart(4, '0')}.json`;
     await writeFile(
-      join(FIXTURES_DIR, fileName),
+      join(this.fixturesDir, fileName),
       JSON.stringify(fixture, null, 2) + '\n',
       'utf-8',
     );

@@ -1,0 +1,18 @@
+Senior Platform Reliability Engineer — FinServ Corp (Bangalore)
+
+About the role:
+You will be owning L2/L3 escalations for the platform on a weekly on-call rota,
+ensuring production incidents are triaged and resolved within SLA. The team handles
+approximately 200 production alerts per week across three time zones.
+
+Requirements:
+- 5+ years experience in production support or site reliability engineering
+- Strong incident management and escalation experience
+- You will work three days per week from our Bangalore office
+- On-call rotation coverage including weekends
+
+Compensation: Competitive, based on experience.
+
+Tech stack: Java microservices, Kubernetes, Datadog, PagerDuty.
+The primary responsibility is maintaining the existing billing platform
+with no planned greenfield development in the next 18 months.

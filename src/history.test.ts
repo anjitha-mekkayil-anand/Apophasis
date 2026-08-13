@@ -326,3 +326,42 @@ describe('history — §9', () => {
     });
   });
 });
+
+
+describe('A1 — screen id collision handling (AC-7.3)', () => {
+  beforeEach(async () => {
+    await rm(SCREENS_DIR, { recursive: true, force: true });
+  });
+
+  afterEach(async () => {
+    await rm(SCREENS_DIR, { recursive: true, force: true });
+  });
+
+  it('disambiguates when the same millisecond produces a collision — no record lost', async () => {
+    const fixedTime = new Date('2026-08-13T23:59:59.999Z');
+    const sharedInput = {
+      verdict: { outcome: 'NO_DISQUALIFIER_FOUND' as const, failedIndexes: [] as number[], unevaluatedIndexes: [] as number[], incomplete: false },
+      findings: CRITERIA.map((_, i) => ({ criterionIndex: i, status: 'holds' as const })),
+      criteria: CRITERIA,
+      label: 'collision-test',
+      candidateFile: 'candidates/coll.txt',
+      criteriaVersion: '6666' + '0'.repeat(60),
+    };
+
+    // First write at the same millisecond
+    const { screenId: id1, filePath: path1 } = await persistScreen({ ...sharedInput, now: fixedTime });
+    // Second write at the SAME millisecond — should disambiguate, not overwrite
+    const { screenId: id2, filePath: path2 } = await persistScreen({ ...sharedInput, now: fixedTime });
+
+    // Different ids
+    expect(id1).not.toBe(id2);
+    // Both files exist
+    const s1 = await readScreen(id1);
+    const s2 = await readScreen(id2);
+    expect(s1.frontmatter.id).toBe(id1);
+    expect(s2.frontmatter.id).toBe(id2);
+    // Index has both entries
+    const screens = await listScreens();
+    expect(screens).toHaveLength(2);
+  });
+});

@@ -13,7 +13,7 @@
  * trailing spaces. Hand-building YAML would corrupt the record.
  */
 
-import { readFile, writeFile, readdir, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, readdir, mkdir, access } from 'node:fs/promises';
 import { join } from 'node:path';
 import { stringify as toYaml } from 'yaml';
 import { renderScreen, type RenderInput } from './render.js';
@@ -61,8 +61,19 @@ export async function persistScreen(input: {
   now?: Date;
 }): Promise<{ screenId: string; filePath: string }> {
   const now = input.now ?? new Date();
-  const screenId = generateScreenId(now);
+  let screenId = generateScreenId(now);
   const screenedAt = now.toISOString();
+
+  // Collision check — AC-7.3: never silently overwrite an existing screen.
+  // If the file already exists (same millisecond), append a counter suffix.
+  await mkdir(SCREENS_DIR, { recursive: true });
+  let filePath = join(SCREENS_DIR, `${screenId}.md`);
+  let suffix = 0;
+  while (await fileExists(filePath)) {
+    suffix++;
+    screenId = `${generateScreenId(now)}-${suffix}`;
+    filePath = join(SCREENS_DIR, `${screenId}.md`);
+  }
 
   // Build the frontmatter — FULL findings, no truncation (AC-7.1)
   const frontmatter: ScreenFrontmatter = {
@@ -93,9 +104,7 @@ export async function persistScreen(input: {
   const yamlBlock = toYaml(frontmatter, { lineWidth: 0 });
   const fileContent = `---\n${yamlBlock}---\n\n${body}\n`;
 
-  // Write the screen file
-  await mkdir(SCREENS_DIR, { recursive: true });
-  const filePath = join(SCREENS_DIR, `${screenId}.md`);
+  // Write the screen file (collision already checked above)
   await writeFile(filePath, fileContent, 'utf-8');
 
   // Append to index
@@ -141,5 +150,18 @@ export async function listScreenFiles(): Promise<string[]> {
     return files.filter(f => f.endsWith('.md')).sort();
   } catch {
     return [];
+  }
+}
+
+
+/**
+ * Check if a file exists (without throwing on absence).
+ */
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
   }
 }
