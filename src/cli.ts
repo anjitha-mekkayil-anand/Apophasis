@@ -13,6 +13,7 @@ import { loadCriteria, CriteriaValidationError } from './criteria.js';
 import { acceptCandidate } from './candidate.js';
 import { CandidateAcceptError } from './errors.js';
 import { requireApiKey, MissingApiKeyError } from './provider.js';
+import { listScreens, readScreen } from './history.js';
 
 const NOT_IMPLEMENTED_PREFIX = '[NOT IMPLEMENTED]';
 
@@ -116,6 +117,45 @@ async function screenAccept(filePath: string, label: string): Promise<void> {
   }
 }
 
+/**
+ * history — list past screens or read a specific one by id.
+ *
+ * Lists from the index for speed. The markdown files are authoritative —
+ * if the index were corrupted, rebuildIndex recreates it from files.
+ * The history command trusts the index for listing (it is a convenience)
+ * and reads from the file for detail (it is the record).
+ */
+async function historyCommand(screenId?: string): Promise<void> {
+  try {
+    if (screenId) {
+      // Read a specific screen
+      const { raw } = await readScreen(screenId);
+      console.log(raw);
+    } else {
+      // List all screens from index
+      const screens = await listScreens();
+      if (screens.length === 0) {
+        console.log('No screens recorded yet.');
+        return;
+      }
+      console.log(`Screens (${screens.length}):\n`);
+      for (const entry of screens) {
+        console.log(`  ${entry.id}  ${entry.verdict}  ${entry.label}  ${entry.screenedAt.slice(0, 10)}`);
+      }
+    }
+  } catch (err: unknown) {
+    if (err instanceof Error && 'code' in err && (err as NodeJS.ErrnoException).code === 'ENOENT') {
+      console.error(`Screen not found: ${screenId ?? '(none)'}`);
+      process.exit(1);
+    }
+    if (err instanceof Error) {
+      console.error(err.message);
+      process.exit(1);
+    }
+    throw err;
+  }
+}
+
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
@@ -138,9 +178,11 @@ async function main(): Promise<void> {
       await screenAccept(filePath, label);
       break;
     }
-    case 'history':
-      notImplemented('history');
+    case 'history': {
+      const screenId = args[1];
+      await historyCommand(screenId);
       break;
+    }
     case 'criteria':
       if (args[1] === 'validate') {
         const filePath = args[2] ?? 'criteria.yaml';

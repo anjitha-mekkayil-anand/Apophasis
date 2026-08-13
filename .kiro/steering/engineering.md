@@ -29,3 +29,10 @@ No fallback, no demo mode, no stub client reachable from the CLI. Recorded fixtu
 ## 7. Never commit a key
 
 `.env.example` only.
+
+
+## 8. A substring word-list cannot assert a semantic property, and must never be applied to text the user supplied
+
+It cannot distinguish affirming a thing from denying it, and it fails on legitimate content that happens to contain the word. Assert the property structurally, or assert against this code's own literals.
+
+*(Cost three separate corrections: a fail-clean message rewritten to satisfy a word-list, a prompt line rejected by its own test, and a renderer test that would fail on a user's criterion.)*
