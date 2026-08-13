@@ -1,0 +1,18 @@
+Staff Software Architect — Distributed Systems (Fully Remote)
+
+About the role:
+We are building a next-generation event streaming platform from scratch.
+This is a greenfield architecture role — you will design and implement the
+core distributed consensus layer, mentor a team of 6 engineers, and define
+the technical roadmap for the next 3 years.
+
+This is an architecture-track position with prod support named as under 15%
+of your time, focused on design reviews of incident response procedures rather
+than carrying a pager.
+
+Requirements:
+- 10+ years experience in distributed systems
+- Published work or patents in consensus algorithms preferred
+- Fully remote, async-first culture, no office attendance required
+
+Tech stack: Rust, TypeScript, Kafka, FoundationDB.

@@ -34,7 +34,7 @@ export const API_KEY_ENV_VAR = 'ANTHROPIC_API_KEY';
  * Default model identifier. Configurable via ANTHROPIC_MODEL env var.
  * Documented here so §5 can read it without hardcoding a second copy.
  */
-export const DEFAULT_MODEL = 'claude-sonnet-4-20250514';
+export const DEFAULT_MODEL = 'claude-sonnet-4-6';
 export const MODEL_ENV_VAR = 'ANTHROPIC_MODEL';
 
 /**

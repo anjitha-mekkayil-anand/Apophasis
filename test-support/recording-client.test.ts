@@ -5,7 +5,7 @@ import { RecordingClient } from './recording-client.js';
 import type { ModelClient } from '../src/provider.js';
 import type { RecordedFixture } from './recording-client.js';
 
-const FIXTURES_DIR = 'test-support/fixtures';
+const FIXTURES_DIR = 'test-support/fixtures-test-temp';
 
 /**
  * A fake model client for testing RecordingClient.
@@ -37,7 +37,7 @@ describe('RecordingClient — §4.3 (NF-3)', () => {
 
   it('writes a fixture file to disk', async () => {
     const fake = new FakeModelClient(['This is the model response.']);
-    const recorder = new RecordingClient(fake, 'test-model');
+    const recorder = new RecordingClient(fake, 'test-model', FIXTURES_DIR);
 
     await recorder.complete('Test prompt');
 
@@ -48,7 +48,7 @@ describe('RecordingClient — §4.3 (NF-3)', () => {
 
   it('fixture contains the prompt and response', async () => {
     const fake = new FakeModelClient(['Response text']);
-    const recorder = new RecordingClient(fake, 'test-model');
+    const recorder = new RecordingClient(fake, 'test-model', FIXTURES_DIR);
 
     await recorder.complete('Prompt text');
 
@@ -60,7 +60,7 @@ describe('RecordingClient — §4.3 (NF-3)', () => {
 
   it('fixture carries the _offlineTestOnly label (NF-3)', async () => {
     const fake = new FakeModelClient(['response']);
-    const recorder = new RecordingClient(fake, 'test-model');
+    const recorder = new RecordingClient(fake, 'test-model', FIXTURES_DIR);
 
     await recorder.complete('prompt');
 
@@ -71,7 +71,7 @@ describe('RecordingClient — §4.3 (NF-3)', () => {
 
   it('fixture records the model identifier', async () => {
     const fake = new FakeModelClient(['response']);
-    const recorder = new RecordingClient(fake, 'claude-sonnet-4-20250514');
+    const recorder = new RecordingClient(fake, 'claude-sonnet-4-20250514', FIXTURES_DIR);
 
     await recorder.complete('prompt');
 
@@ -82,7 +82,7 @@ describe('RecordingClient — §4.3 (NF-3)', () => {
 
   it('fixture has an ISO 8601 timestamp', async () => {
     const fake = new FakeModelClient(['response']);
-    const recorder = new RecordingClient(fake, 'test-model');
+    const recorder = new RecordingClient(fake, 'test-model', FIXTURES_DIR);
 
     await recorder.complete('prompt');
 
@@ -94,7 +94,7 @@ describe('RecordingClient — §4.3 (NF-3)', () => {
 
   it('numbers fixture files sequentially across multiple calls', async () => {
     const fake = new FakeModelClient(['r1', 'r2', 'r3']);
-    const recorder = new RecordingClient(fake, 'test-model');
+    const recorder = new RecordingClient(fake, 'test-model', FIXTURES_DIR);
 
     await recorder.complete('p1');
     await recorder.complete('p2');
@@ -110,7 +110,7 @@ describe('RecordingClient — §4.3 (NF-3)', () => {
 
   it('passes the prompt through to the inner client and returns the response', async () => {
     const fake = new FakeModelClient(['expected response']);
-    const recorder = new RecordingClient(fake, 'test-model');
+    const recorder = new RecordingClient(fake, 'test-model', FIXTURES_DIR);
 
     const result = await recorder.complete('test prompt');
     expect(result).toBe('expected response');
