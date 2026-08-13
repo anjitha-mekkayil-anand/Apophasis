@@ -54,8 +54,8 @@ export class MissingApiKeyError extends Error {
       `No API key configured.\n\n` +
       `Set the ${API_KEY_ENV_VAR} environment variable before running this command.\n` +
       `See .env.example for the expected format.\n\n` +
-      `There is no fallback or offline operation for commands that require a ` +
-      `model call. The key is the only way to proceed.`
+      `There is no fallback, demo mode, or offline operation for commands that ` +
+      `require a model call. The key is the only way to proceed.`
     );
     this.name = 'MissingApiKeyError';
   }
