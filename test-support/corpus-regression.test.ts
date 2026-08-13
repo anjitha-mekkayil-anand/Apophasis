@@ -58,7 +58,7 @@ describe('corpus regression — §10', () => {
       const verdict = assembleVerdict(verified, criteria);
 
       expect(verdict.outcome).toBe('NO_DISQUALIFIER_FOUND');
-      expect(verdict.incomplete).toBe(false);
+      expect(verdict.incomplete).toBe(true); // compensation-floor is disqualifying + indeterminate
     });
   });
 

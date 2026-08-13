@@ -22,3 +22,11 @@ criteria:
     statement: The stack is maintenance-only with no greenfield work described.
     rationale: Survivable, but it slows the architecture track.
     addedOn: 2026-08-13
+  - id: compensation-floor
+    kind: disqualifying
+    statement: >
+      The stated compensation is below the required floor.
+    rationale: >
+      Below the floor the move is not worth making at any other quality of role.
+      Stated as disqualifying because it cannot be traded against anything else.
+    addedOn: 2026-08-13
