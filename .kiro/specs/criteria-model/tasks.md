@@ -85,7 +85,7 @@
 
 > Tasks 10.6 and 10.7 were deferred from §5 because they require a live call or a captured fixture; neither exists before §10. They are the first tests to prove the prompt **elicits** what the spec requires, as opposed to proving the parser handles it.
 
-- [ ] **10.1** Prepare at least two real candidate texts: one that should be REFUSED (contains a disqualifying match) and one that should be NO_DISQUALIFIER_FOUND. Seed data must contain the thing being detected. — AC: *AC-3.1*, engineering rule 4.
+- [x] **10.1** Prepare at least two real candidate texts: one that should be REFUSED (contains a disqualifying match) and one that should be NO_DISQUALIFIER_FOUND. Seed data must contain the thing being detected. *Previously unsatisfied: corpus produced no `indeterminate`. Fixed by adding `compensation-floor` criterion — both candidates now produce `indeterminate` on it, exercising the unevaluated count and incompleteness marker.* — AC: *AC-3.1*, engineering rule 4.
 - [ ] **10.2** Run end-to-end screens against the live model. Verify the full pipeline: criteria load → candidate accept → model call → verification → verdict → render → record. — AC: *AC-3.1*, *AC-3.4*, *AC-5.1*, *AC-7.1*
 - [ ] **10.3** Capture the request/response pairs as fixtures via `RecordingClient`. Label them as offline test data only. — AC: *NF-3*
 - [ ] **10.4** Write fixture-based regression tests using the captured pairs: confirm the pipeline reproduces the same verdict deterministically from recorded model output. — AC: *AC-3.4*, *AC-5.1*, engineering rule 3.
