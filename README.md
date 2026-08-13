@@ -85,13 +85,13 @@ No fallback, no offline operation, no stub client reachable from the CLI. This i
 
 ## API and service costs
 
-Measured against `claude-sonnet-4-6` with 4 criteria and candidate texts of 500–800 bytes:
+Measured against `claude-sonnet-4-6` with 5 criteria and candidate texts of 500–800 bytes:
 
 | Metric | Per screen |
 |--------|-----------|
-| Prompt size | ~3,300 chars (~1,000 tokens) |
-| Response size | ~600 chars (~150 tokens) |
-| Estimated cost | ~$0.004 |
+| Prompt size | ~3,400 chars (~1,000 tokens) |
+| Response size | ~700 chars (~180 tokens) |
+| Estimated cost | ~$0.005 |
 | Latency | 3–5 seconds |
 | Model calls per screen | exactly 1 |
 
