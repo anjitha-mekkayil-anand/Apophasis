@@ -105,10 +105,7 @@ function renderRefused(input: RenderInput): string {
   // Incompleteness marker
   if (verdict.incomplete) {
     lines.push('');
-    const disqIndeterminate = verdict.unevaluatedIndexes.filter(
-      i => criteria[i].kind === 'disqualifying'
-    ).length;
-    lines.push(`! Incomplete: ${disqIndeterminate} disqualifying criterion could not be evaluated.`);
+    lines.push(renderIncompleteMarker(verdict, criteria));
   }
 
   // Footer
@@ -159,10 +156,7 @@ function renderNoDisqualifierFound(input: RenderInput): string {
   // Incompleteness marker
   if (verdict.incomplete) {
     lines.push('');
-    const disqIndeterminate = verdict.unevaluatedIndexes.filter(
-      i => criteria[i].kind === 'disqualifying'
-    ).length;
-    lines.push(`! Incomplete: ${disqIndeterminate} disqualifying criterion could not be evaluated.`);
+    lines.push(renderIncompleteMarker(verdict, criteria));
   }
 
   // Footer
@@ -170,6 +164,14 @@ function renderNoDisqualifierFound(input: RenderInput): string {
   lines.push(`Criteria version: ${criteriaVersion.slice(0, 8)}...  |  Screened ${formatDate(screenedAt)}`);
 
   return lines.join('\n');
+}
+
+function renderIncompleteMarker(verdict: Verdict, criteria: Criterion[]): string {
+  const disqIndeterminate = verdict.unevaluatedIndexes.filter(
+    i => criteria[i].kind === 'disqualifying'
+  ).length;
+  const noun = disqIndeterminate === 1 ? 'criterion' : 'criteria';
+  return `! Incomplete: ${disqIndeterminate} disqualifying ${noun} could not be evaluated.`;
 }
 
 function renderUnevaluated(verdict: Verdict, criteria: Criterion[]): string {

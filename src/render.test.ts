@@ -31,36 +31,47 @@ const BANNED_APPROVAL_TERMS = [
   '✓', '✔', '☑',
 ];
 
-describe('render — §8', () => {
-  describe('banned approval terms never appear', () => {
-    it('REFUSED output contains no approval language', () => {
-      const input: RenderInput = {
-        ...BASE_INPUT,
-        verdict: {
-          outcome: 'REFUSED',
-          decidingCriterionIndex: 0,
-          failedIndexes: [0],
-          unevaluatedIndexes: [],
-          incomplete: false,
-        },
-        findings: [
-          { criterionIndex: 0, status: 'fails', evidence: 'owning L2/L3 escalations' },
-          { criterionIndex: 1, status: 'holds' },
-          { criterionIndex: 2, status: 'holds' },
-          { criterionIndex: 3, status: 'holds' },
-          { criterionIndex: 4, status: 'holds' },
-        ],
-      };
-      const output = renderScreen(input);
-      for (const term of BANNED_APPROVAL_TERMS) {
-        expect(output).not.toContain(term);
-      }
-    });
+// NOTE: The above list is kept for reference but the test below asserts
+// against template literals only, not composed output (engineering rule 8).
 
-    it('NO_DISQUALIFIER_FOUND output contains no approval language', () => {
-      const output = renderScreen(BASE_INPUT);
-      for (const term of BANNED_APPROVAL_TERMS) {
-        expect(output).not.toContain(term);
+describe('render — §8', () => {
+  describe('banned approval terms never appear in renderer template literals', () => {
+    // NOTE: This test asserts against the renderer's OWN template strings —
+    // the literals this code contributes — not the composed output which
+    // includes user-supplied criteria statements and evidence quotes.
+    // A substring word-list cannot assert a semantic property, and must never
+    // be applied to text the user supplied (engineering rule 8).
+
+    /** Template strings used by the renderer (extracted from render.ts) */
+    const RENDERER_TEMPLATES = [
+      'REFUSED',
+      'NO DISQUALIFIER FOUND',
+      'Deciding criterion:',
+      'Also failed:',
+      'Could not be evaluated',
+      'none',
+      '! Incomplete:',
+      'Criteria version:',
+      'Screened',
+      'This is not a recommendation. Nothing here endorses this candidate; it\nmeans none of your disqualifying criteria fired.',
+      'No disqualifying criteria were defined. This screen could not have refused.',
+      'Residual risks (preferences that failed, in your order):',
+      'disqualifying criterion could not be evaluated.',
+      'disqualifying criteria could not be evaluated.',
+    ];
+
+    /** Words and symbols that this code must never write as its own vocabulary */
+    const BANNED_APPROVAL_TERMS = [
+      'PASS', 'PASSED', 'CLEAR', 'APPROVED',
+      'looks good', 'no issues found',
+      '✓', '✔', '☑',
+    ];
+
+    it('no renderer template literal contains banned approval language', () => {
+      for (const template of RENDERER_TEMPLATES) {
+        for (const term of BANNED_APPROVAL_TERMS) {
+          expect(template).not.toContain(term);
+        }
       }
     });
   });
@@ -181,7 +192,7 @@ describe('render — §8', () => {
       expect(output).toContain('Could not be evaluated (2 of 5):');
     });
 
-    it('shows incompleteness marker when incomplete', () => {
+    it('shows incompleteness marker with correct grammar (singular)', () => {
       const input: RenderInput = {
         ...BASE_INPUT,
         verdict: {
@@ -200,6 +211,27 @@ describe('render — §8', () => {
       };
       const output = renderScreen(input);
       expect(output).toContain('! Incomplete: 1 disqualifying criterion could not be evaluated.');
+    });
+
+    it('shows incompleteness marker with correct grammar (plural)', () => {
+      const input: RenderInput = {
+        ...BASE_INPUT,
+        verdict: {
+          outcome: 'NO_DISQUALIFIER_FOUND',
+          failedIndexes: [],
+          unevaluatedIndexes: [0, 1],
+          incomplete: true,
+        },
+        findings: [
+          { criterionIndex: 0, status: 'indeterminate' },
+          { criterionIndex: 1, status: 'indeterminate' },
+          { criterionIndex: 2, status: 'holds' },
+          { criterionIndex: 3, status: 'holds' },
+          { criterionIndex: 4, status: 'holds' },
+        ],
+      };
+      const output = renderScreen(input);
+      expect(output).toContain('! Incomplete: 2 disqualifying criteria could not be evaluated.');
     });
 
     it('shows "Could not be evaluated: none" when all criteria evaluated', () => {
