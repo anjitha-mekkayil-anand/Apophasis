@@ -46,9 +46,11 @@ As a user, I want every screen kept with its criteria version and evidence, so I
 - **AC-3.4** The system SHALL verify `evidence` by substring match against the stored candidate text **in code**, not by trusting the model's assertion.
 - **AC-3.5** IF the substring check fails, the system SHALL demote the finding to `indeterminate` and record the demotion reason. *A claimed quote that is not in the source is a fabrication, and the app must not act on one.*
 - **AC-3.6** The system SHALL record which criteria version was in force for the screen.
-- **AC-3.7** WHERE a criterion has `hasException: true` AND a finding for it is `holds`, the system SHALL require an `exceptionEvidence` field containing a verbatim span from the candidate text, verified by substring match as in AC-3.4. IF `exceptionEvidence` is absent, empty, or fails the substring check, the system SHALL demote the finding to `indeterminate` and record the demotion reason.
+- **AC-3.7** WHERE a criterion has `hasException: true` AND a finding for it is `holds`, the finding SHALL carry a `holdsReason` of either `not-violated` or `exception-applied`. WHERE `holdsReason` is `exception-applied`, the system SHALL require an `exceptionEvidence` field containing a verbatim span from the candidate text, verified as in AC-3.4, and SHALL demote the finding to `indeterminate` if it is absent, empty, or fails verification. WHERE `holdsReason` is `not-violated`, no evidence is required.
 
-*This closes an asymmetry that AC-3.3 alone leaves open: refusing requires a quote, but rescuing would not have. "The exception applied" is where a model is generous, and it is the direction that costs a candidate you would have refused. The trigger is author-declared rather than inferred, because inferring it would put a judgement back in the model that the governing principle keeps in code.*
+*A criterion with an exception can hold two ways, and only one of them is a rescue. Requiring proof of the other would mark every genuinely clean candidate incomplete. The earlier form of this criterion did exactly that.*
+
+- **AC-3.8** WHERE a criterion has `hasException: true` AND a finding is `holds` AND `holdsReason` is missing, the system SHALL demote to `indeterminate`. *A model that will not say which way it held has not answered the question.*
 
 ### AC-4 — `indeterminate` is not a pass
 

@@ -22,11 +22,14 @@ export interface CriteriaFile {
   criteria: Criterion[];
 }
 
+export type HoldsReason = 'not-violated' | 'exception-applied';
+
 export interface Finding {
   criterionIndex: number;          // by index, never restated text
   status: Status;
   evidence?: string;               // required when status === 'fails'
-  exceptionEvidence?: string;      // required when criterion has hasException: true and status === 'holds'
+  holdsReason?: HoldsReason;       // required when status === 'holds' on a hasException criterion (AC-3.7)
+  exceptionEvidence?: string;      // required when holdsReason === 'exception-applied' (AC-3.7)
   demotedFrom?: Status;            // set by verify, never by the model
   demotionReason?: string;
 }
