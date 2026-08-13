@@ -83,6 +83,7 @@ As a user, I want every screen kept with its criteria version and evidence, so I
 - **NF-4** Cost per screen SHALL be measured and documented in the README, alongside rate limits.
 - **NF-5** No API key SHALL be committed. `.env.example` in the repo; the working test credential goes on the submission form.
 - **NF-6** No recording or replay client SHALL be reachable from any CLI code path. Fixture capture SHALL be available only to the test suite. *A stub that can be reached at runtime is a demo mode regardless of what it is called, and presenting simulated functionality as working is a disqualification matter.*
+- **NF-7** The system SHALL NOT require a database or any dependency needing a native build step. All persisted state SHALL be plain files.
 
 ## Deliberately out of scope — the cut list goes in the README
 

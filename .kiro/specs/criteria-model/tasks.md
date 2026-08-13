@@ -4,12 +4,13 @@
 
 > Tasks marked *scaffolding* satisfy no acceptance criterion. They are listed because the work exists, not because it is traceable.
 
-- [ ] **1.1** Initialise `package.json` with `"type": "module"`, project name, and no dependencies yet. — AC: *none (scaffolding)*
+- [ ] **1.1** Initialise `package.json` with `"type": "module"`, project name, and the dependencies needed for §1: **typescript, tsx, vitest, @types/node, yaml**. Dependencies are added per section; no section adds one it does not use in that section. — AC: *none (scaffolding)*
 - [ ] **1.2** Create the on-disk directory layout: `candidates/`, `screens/`, and root-level `criteria.yaml` placeholder. — AC: *none (scaffolding)*
 - [ ] **1.3** Create `.env.example` with commented placeholder for the API key. — AC: *NF-5*
-- [ ] **1.4** Create the SQLite schema (migrations or init script): tables for `screens`, `findings`, `criteria_snapshots`. — AC: *AC-7.1*
+- [ ] **1.4** Create the on-disk record format: YAML frontmatter schema for `screens/<id>.md`, `screens/index.json` shape, and a `rebuildIndex` function that reconstructs the index from `screens/*.md` alone. Write a test that deletes the index, rebuilds it, and asserts it matches. — AC: *AC-7.1*, *AC-7.2*, *NF-7*
 - [ ] **1.5** Stub the CLI entry point (`bin/apophasis.js` or similar) with subcommands: `screen`, `history`, `criteria validate`. Wire no logic yet. — AC: *none (scaffolding)*
 - [ ] **1.6** Configure Vitest (ESM). Confirm a trivial test passes with `vitest --run`. — AC: *none (scaffolding)*
+- [ ] **1.7** Create `tsconfig.json` targeting modern Node with `"module": "NodeNext"` and strict mode on. — AC: *none (scaffolding)*
 
 ## § 2 — Criteria model 🔧
 
@@ -72,11 +73,12 @@
 
 ## § 9 — History 🔧
 
-- [ ] **9.1** Persist every screen as a record: candidate text, criteria version hash, all findings with evidence, and verdict. Store in SQLite and as `screens/<id>.md`. — AC: *AC-7.1*, *AC-7.2*
+- [ ] **9.1** Persist every screen as a record in `screens/<id>.md`: candidate text reference, criteria version hash, all findings with evidence, and verdict in YAML frontmatter, followed by the human-readable rendering. Append the entry to `screens/index.json`. — AC: *AC-7.1*, *AC-7.2*, *NF-7*
 - [ ] **9.2** Ensure `screens/<id>.md` is human-readable in any editor without the application. — AC: *AC-7.2*, *NF-1*
 - [ ] **9.3** Enforce append-only: never delete or overwrite a stored screen. A re-screen of the same candidate creates a new record with a new id. — AC: *AC-7.3*
-- [ ] **9.4** Implement the `history` CLI subcommand: list past screens, read a specific screen by id. — AC: *AC-7.1*, *AC-7.2*
+- [ ] **9.4** Implement the `history` CLI subcommand: list past screens (from index), read a specific screen by id (from the markdown file). — AC: *AC-7.1*, *AC-7.2*
 - [ ] **9.5** Write tests: screen is persisted and retrievable; re-screen creates a new record; markdown file is self-contained; deletion is not possible through the interface. — AC: *AC-7.1*, *AC-7.2*, *AC-7.3*
+- [ ] **9.6** Write the index-rebuild test: delete `screens/index.json`, call `rebuildIndex`, assert the rebuilt index matches the original. — AC: *AC-7.1*, *NF-7*
 
 ## § 10 — Corpus proof 🤖
 

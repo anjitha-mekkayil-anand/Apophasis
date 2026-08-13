@@ -1,0 +1,20 @@
+{
+  "name": "apophasis",
+  "version": "0.1.0",
+  "description": "Screening tool that evaluates candidates against written disqualifying criteria",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest --run",
+    "start": "tsx src/cli.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "dependencies": {
+    "tsx": "^4.16.0",
+    "yaml": "^2.5.0"
+  }
+}
