@@ -27,7 +27,7 @@ One model call. Everything else is deterministic.
 | **verify** | Substring-check every evidence span against stored candidate text; demote on failure | AC-3.4, AC-3.5, AC-3.7 |
 | **assemble** | Verdict from findings by rule; deciding criterion by author order | AC-5.3, AC-5.4, AC-5.5, AC-4.3 |
 | **render** | The refusal, residual risks, the unevaluated list, the not-a-recommendation line | AC-4.2, AC-5.5, AC-6.1 |
-| **record** | Append-only screen record, markdown + db | AC-7.1, AC-7.2, AC-7.3 |
+| **record** | Append-only screen record, markdown + index | AC-7.1, AC-7.2, AC-7.3 |
 
 ## Data model
 
@@ -126,10 +126,14 @@ Criteria marked `hasException: true` are presented to the model with their excep
 ```
 criteria.yaml           # the rules - hand-edited, versioned, the product
 candidates/<id>.txt     # raw candidate text, verbatim, never rewritten
-screens/<id>.md         # the readable record
-apophasis.db            # SQLite: screens, findings, criteria snapshots
+screens/<id>.md         # the readable record (YAML frontmatter + rendered output)
+screens/index.json      # convenience index, NOT a source of truth
 .env.example            # never a real key
 ```
+
+`screens/<id>.md` is **the** record. Everything AC-7.1 requires — candidate text reference, criteria version hash, every finding with its evidence, the verdict — lives in that file, in a YAML frontmatter block followed by the readable rendering.
+
+`screens/index.json` is an append-only list of `{ id, label, verdict, criteriaVersion, screenedAt }` for listing and lookup. **It is a convenience index, never a source of truth** — if it disagrees with the markdown files, the markdown wins, and it must be rebuildable from `screens/*.md` alone.
 
 `screens/*.md` is readable without the application (AC-7.2). Append-only: a re-screen writes a new record (AC-7.3).
 
@@ -179,7 +183,7 @@ Kiro generates the tasks; these are the section boundaries. 🔧 = pure code, no
 
 | § | Content | |
 |---|---|---|
-| 1 | Skeleton — ESM setup, CLI stubs, SQLite schema, on-disk layout | 🔧 |
+| 1 | Skeleton — ESM setup, CLI stubs, record format, on-disk layout | 🔧 |
 | 2 | Criteria model — parse, validate, `rationale` required, version hash | 🔧 |
 | 3 | Candidate accept — verbatim storage, label, timestamp | 🔧 |
 | 4 | Model interface — provider, **fail clean with no key**, `RecordingClient` for fixtures | 🔧 |

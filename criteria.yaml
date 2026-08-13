@@ -1,0 +1,24 @@
+schemaVersion: 1  # file-format version, distinct from the content hash of AC-3.6 which is what a screen records
+criteria:
+  - id: prod-support
+    kind: disqualifying
+    statement: >
+      The role is production support, L2/L3, or an on-call escalation function,
+      unless the role is explicitly architecture-track with prod support named
+      as under 20%.
+    rationale: >
+      Ruled out at any salary. Past instances produced the hero-complex pattern
+      and displaced the architecture track entirely.
+    addedOn: 2026-08-03
+    source: "Why Applying Feels Dangerous"
+    hasException: true
+  - id: onsite-required
+    kind: disqualifying
+    statement: The role requires relocation or regular onsite presence.
+    rationale: Commute constraint. Non-negotiable.
+    addedOn: 2026-07-09
+  - id: legacy-only
+    kind: preference
+    statement: The stack is maintenance-only with no greenfield work described.
+    rationale: Survivable, but it slows the architecture track.
+    addedOn: 2026-08-13
