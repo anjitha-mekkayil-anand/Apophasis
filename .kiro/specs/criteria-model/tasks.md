@@ -51,8 +51,8 @@
 
 - [ ] **6.1** Implement substring check: for every finding with status `fails`, verify that `evidence` is a substring of the stored candidate text. — AC: *AC-3.4*
 - [ ] **6.2** If substring check fails, demote the finding to `indeterminate`, set `demotedFrom` to `fails`, and record the demotion reason. — AC: *AC-3.5*
-- [ ] **6.3** Implement `exceptionEvidence` verification: for any finding with status `holds` that carries an `exceptionEvidence` field, verify by substring match. Demote to `indeterminate` if check fails. — AC: *AC-3.7*
-- [ ] **6.4** Write tests: valid evidence passes; fabricated evidence demotes to `indeterminate`; exception evidence verified and demoted on failure. Seed data must contain the thing being detected. — AC: *AC-3.4*, *AC-3.5*, *AC-3.7*, engineering rule 4.
+- [ ] **6.3** Verify `exceptionEvidence` when `holdsReason` is `exception-applied`; demote on failure. Demote when `holdsReason` is missing on a `hasException` criterion with status `holds`. A `not-violated` hold passes untouched with no evidence required. — AC: *AC-3.7*, *AC-3.8*
+- [ ] **6.4** Write tests: valid evidence passes; fabricated evidence demotes to `indeterminate`; exception evidence verified and demoted on failure; a `not-violated` hold with no evidence passes untouched; missing `holdsReason` on hasException criterion demotes. Seed data must contain the thing being detected. — AC: *AC-3.4*, *AC-3.5*, *AC-3.7*, *AC-3.8*, engineering rule 4.
 
 ## § 7 — Verdict assembly 🔧
 

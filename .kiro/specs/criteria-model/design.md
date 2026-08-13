@@ -74,7 +74,8 @@ interface Finding {
   criterionIndex: number          // by index, never restated text
   status: Status
   evidence?: string               // required when status === 'fails'
-  exceptionEvidence?: string      // required when criterion has hasException: true and status === 'holds'
+  holdsReason?: 'not-violated' | 'exception-applied'  // required when status === 'holds' on a hasException criterion (AC-3.7)
+  exceptionEvidence?: string      // required when holdsReason === 'exception-applied'
   demotedFrom?: Status            // set by verify, never by the model
   demotionReason?: string
 }
@@ -153,6 +154,7 @@ Criteria marked `hasException: true` are presented to the model with their excep
 | A clean verdict cannot hide an unevaluated disqualifier | **Code** — `incomplete` flag (AC-4.3) |
 | Whether a specific rule is violated | **Model** — the one judgement it makes |
 | The model is never asked to decide the outcome | **Code** — AC-5.7, asserted against the rendered prompt |
+| Which of the two ways a hasException criterion held | **Model** — reported as `holdsReason`, then obliged by code (AC-3.7, AC-3.8) |
 
 ## On-disk layout
 

@@ -46,7 +46,10 @@ Return your answer as a JSON array with exactly ${criteria.length} objects, one 
 - "index": the criterion number (integer, 0-based, matching the [N] label)
 - "status": exactly one of "fails", "holds", or "indeterminate"
 - "evidence": required when status is "fails" — the EXACT verbatim span from the candidate text that shows the violation. Copy it character-for-character; do not paraphrase or truncate.${criteria.some(c => c.hasException) ? `
-- "exceptionEvidence": required when status is "holds" AND the criterion is marked [hasException: true] AND you determined it holds BECAUSE the stated exception in the criterion was met by the candidate. Provide the EXACT verbatim span from the candidate text showing the exception is satisfied. If the criterion simply holds because the candidate does not trigger it at all (rather than because an exception rescued it), do NOT provide exceptionEvidence.` : ''}
+- "holdsReason": required when status is "holds" AND the criterion is marked [hasException: true]. Must be exactly one of:
+  - "not-violated": the candidate text simply does not trigger the rule at all. No further evidence needed.
+  - "exception-applied": the rule WOULD have been violated, but the stated exception in the criterion is met by the candidate. You MUST also provide "exceptionEvidence" (see below).
+- "exceptionEvidence": required when "holdsReason" is "exception-applied" — the EXACT verbatim span from the candidate text showing the exception is satisfied. Copy it character-for-character; do not paraphrase or truncate.` : ''}
 
 Status meanings:
 - "fails": the candidate text clearly violates this criterion, and you can quote the exact sentence(s) proving it.

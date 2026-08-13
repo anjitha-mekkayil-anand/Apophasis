@@ -145,10 +145,13 @@ describe('prompt — §5', () => {
 
     it('explains when exceptionEvidence is required vs not', () => {
       const prompt = buildScreenPrompt(SAMPLE_CANDIDATE, SAMPLE_CRITERIA);
-      // It should explain: required when holds BECAUSE the exception was met
+      // The prompt now uses holdsReason to structurally distinguish the two cases:
+      // 'not-violated' (no evidence needed) vs 'exception-applied' (evidence required)
       expect(prompt).toContain('exception');
-      // It should explain: NOT required when holds because criterion simply doesn't apply
-      expect(prompt.toLowerCase()).toContain('do not provide exceptionevidence');
+      expect(prompt.toLowerCase()).toContain('not-violated');
+      expect(prompt.toLowerCase()).toContain('exception-applied');
+      // 'not-violated' described as needing no further evidence
+      expect(prompt.toLowerCase()).toContain('no further evidence needed');
     });
 
     it('does not mention exceptionEvidence when no criteria have hasException', () => {

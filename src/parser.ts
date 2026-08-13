@@ -19,9 +19,10 @@
  * from the expected shape is a hard error.
  */
 
-import type { Finding, Status } from './types.js';
+import type { Finding, Status, HoldsReason } from './types.js';
 
 const VALID_STATUSES: readonly Status[] = ['fails', 'holds', 'indeterminate'];
+const VALID_HOLDS_REASONS: readonly HoldsReason[] = ['not-violated', 'exception-applied'];
 
 export class ParseError extends Error {
   constructor(message: string) {
@@ -34,6 +35,7 @@ interface RawFinding {
   index?: unknown;
   status?: unknown;
   evidence?: unknown;
+  holdsReason?: unknown;
   exceptionEvidence?: unknown;
 }
 
@@ -143,6 +145,19 @@ export function parseModelResponse(responseText: string, criteriaCount: number):
 
     if (status === 'fails' && typeof raw.evidence === 'string') {
       finding.evidence = raw.evidence;
+    }
+
+    // Accept holdsReason if present; validate its value but do NOT reject absence.
+    // Absence is AC-3.8's demotion concern (§6), not a parse error.
+    // Parse errors are malformed output; demotions are well-formed output that failed a gate.
+    if (status === 'holds' && raw.holdsReason !== undefined) {
+      if (typeof raw.holdsReason !== 'string' || !VALID_HOLDS_REASONS.includes(raw.holdsReason as HoldsReason)) {
+        throw new ParseError(
+          `Finding at position ${i} (index ${index}): invalid holdsReason "${String(raw.holdsReason)}". ` +
+          `Must be one of: ${VALID_HOLDS_REASONS.join(', ')}.`
+        );
+      }
+      finding.holdsReason = raw.holdsReason as HoldsReason;
     }
 
     if (status === 'holds' && typeof raw.exceptionEvidence === 'string' && raw.exceptionEvidence.trim() !== '') {
