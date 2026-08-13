@@ -11,6 +11,8 @@
 
 import { loadCriteria, CriteriaValidationError } from './criteria.js';
 import { acceptCandidate } from './candidate.js';
+import { CandidateAcceptError } from './errors.js';
+import { requireApiKey, MissingApiKeyError } from './provider.js';
 
 const NOT_IMPLEMENTED_PREFIX = '[NOT IMPLEMENTED]';
 
@@ -71,12 +73,19 @@ async function criteriaValidate(filePath: string): Promise<void> {
 /**
  * screen — accepts a candidate file and stores it, then stops.
  *
+ * Fail-clean: the API key is checked BEFORE the candidate is written to disk.
+ * No partial state is created if the run cannot complete (NF-3).
+ *
  * The rest of the pipeline (model call, verification, verdict, render, record)
  * is not yet implemented. The output clearly states this so nothing it prints
  * can be mistaken for a verdict.
  */
 async function screenAccept(filePath: string, label: string): Promise<void> {
   try {
+    // Fail clean BEFORE any work — NF-3
+    // No candidate is written, no partial record exists, if the key is missing.
+    requireApiKey();
+
     const result = await acceptCandidate(filePath, label);
     console.log(`Candidate accepted.`);
     console.log(`  ID: ${result.id}`);
@@ -91,6 +100,14 @@ async function screenAccept(filePath: string, label: string): Promise<void> {
     );
     process.exit(1);
   } catch (err: unknown) {
+    if (err instanceof MissingApiKeyError) {
+      console.error(err.message);
+      process.exit(1);
+    }
+    if (err instanceof CandidateAcceptError) {
+      console.error(err.message);
+      process.exit(1);
+    }
     if (err instanceof Error) {
       console.error(err.message);
       process.exit(1);
