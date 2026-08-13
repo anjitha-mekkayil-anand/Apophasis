@@ -73,7 +73,7 @@
 
 ## § 9 — History 🔧
 
-- [ ] **9.1** Persist every screen as a record in `screens/<id>.md`: candidate text reference, criteria version hash, all findings with evidence, and verdict in YAML frontmatter, followed by the human-readable rendering. Append the entry to `screens/index.json`. — AC: *AC-7.1*, *AC-7.2*, *NF-7*
+- [ ] **9.1** Persist every screen as a record in `screens/<id>.md`: candidate text reference, criteria version hash, all findings with evidence, and verdict in YAML frontmatter, followed by the human-readable rendering. Append the entry to `screens/index.json`. **`getCandidateText` must be the only decode path for candidate bytes** — both the prompt and the verifier receive text from it. This is the point where the invariant becomes enforced rather than merely prepared. — AC: *AC-7.1*, *AC-7.2*, *NF-7*
 - [ ] **9.2** Ensure `screens/<id>.md` is human-readable in any editor without the application. — AC: *AC-7.2*, *NF-1*
 - [ ] **9.3** Enforce append-only: never delete or overwrite a stored screen. A re-screen of the same candidate creates a new record with a new id. — AC: *AC-7.3*
 - [ ] **9.4** Implement the `history` CLI subcommand: list past screens (from index), read a specific screen by id (from the markdown file). — AC: *AC-7.1*, *AC-7.2*
