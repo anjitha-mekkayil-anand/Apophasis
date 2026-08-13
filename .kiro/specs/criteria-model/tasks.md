@@ -70,10 +70,11 @@
 - [ ] **8.2** Implement the NO_DISQUALIFIER_FOUND output shape: the not-a-recommendation statement in plain language, residual risks (failed preferences in author order), unevaluated list with count, incompleteness marker. — AC: *AC-5.5*, *AC-6.1*, *AC-6.2*, *AC-4.2*, *AC-4.3*
 - [ ] **8.3** Ensure residual risks are listed in author-declared order and never ranked, weighted, or summed. — AC: *AC-6.1*, *AC-6.2*
 - [ ] **8.4** Write tests: REFUSED shape contains all required sections; NO_DISQUALIFIER_FOUND shape contains not-a-recommendation line and residual risks; unevaluated count matches. — AC: *AC-5.4*, *AC-5.5*, *AC-4.2*, *AC-6.1*
+- [ ] **8.5** **`getCandidateText` must be the only decode path for candidate bytes** — both the prompt and the verifier receive text from it. The pipeline is assembled by §8; this is the point where the invariant becomes enforced rather than merely prepared. — AC: *none (invariant enforcement)*
 
 ## § 9 — History 🔧
 
-- [ ] **9.1** Persist every screen as a record in `screens/<id>.md`: candidate text reference, criteria version hash, all findings with evidence, and verdict in YAML frontmatter, followed by the human-readable rendering. Append the entry to `screens/index.json`. **`getCandidateText` must be the only decode path for candidate bytes** — both the prompt and the verifier receive text from it. This is the point where the invariant becomes enforced rather than merely prepared. — AC: *AC-7.1*, *AC-7.2*, *NF-7*
+- [ ] **9.1** Persist every screen as a record in `screens/<id>.md`: candidate text reference, criteria version hash, all findings with evidence, and verdict in YAML frontmatter, followed by the human-readable rendering. Append the entry to `screens/index.json`. — AC: *AC-7.1*, *AC-7.2*, *NF-7*
 - [ ] **9.2** Ensure `screens/<id>.md` is human-readable in any editor without the application. — AC: *AC-7.2*, *NF-1*
 - [ ] **9.3** Enforce append-only: never delete or overwrite a stored screen. A re-screen of the same candidate creates a new record with a new id. — AC: *AC-7.3*
 - [ ] **9.4** Implement the `history` CLI subcommand: list past screens (from index), read a specific screen by id (from the markdown file). — AC: *AC-7.1*, *AC-7.2*
