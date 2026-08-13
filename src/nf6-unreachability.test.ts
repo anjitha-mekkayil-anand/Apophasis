@@ -17,14 +17,24 @@ import { readFileSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 
 /**
- * Extract all static import paths from a TypeScript source file.
- * Matches: import ... from 'path'  and  import 'path'
- * Also matches: export ... from 'path'
+ * Extract all import paths from a TypeScript source file.
+ * Matches:
+ *   - Static: import ... from 'path'  /  import 'path'  /  export ... from 'path'
+ *   - Dynamic: import('path') — ESM dynamic imports
+ *
+ * KNOWN LIMIT: This is regex over source text. It will not catch paths
+ * constructed at runtime (e.g. import(variable)). However, ESM-only rules
+ * ban require(), and a computed dynamic import of a relative path to
+ * test-support/ would be bizarre enough to catch in review. The gap is
+ * narrow but not zero — this test reads as "covers static and literal
+ * dynamic imports", not "covers all possible runtime reachability."
  */
 function extractImports(filePath: string): string[] {
   const content = readFileSync(filePath, 'utf-8');
   const importRegex = /(?:import|export)\s+.*?from\s+['"]([^'"]+)['"]/g;
   const sideEffectImport = /import\s+['"]([^'"]+)['"]/g;
+  // Dynamic import: import('path') or import("path")
+  const dynamicImport = /import\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
 
   const paths: string[] = [];
   let match: RegExpExecArray | null;
@@ -33,6 +43,9 @@ function extractImports(filePath: string): string[] {
     paths.push(match[1]);
   }
   while ((match = sideEffectImport.exec(content)) !== null) {
+    paths.push(match[1]);
+  }
+  while ((match = dynamicImport.exec(content)) !== null) {
     paths.push(match[1]);
   }
 

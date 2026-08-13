@@ -36,16 +36,16 @@
 - [ ] **4.4** Write tests: missing key produces the expected error and exit code; `RecordingClient` writes a fixture file; fixture files carry the "offline test suite only" label. — AC: *NF-3*
 - [ ] **4.5** Write a test that asserts no CLI code path can construct or reach the `RecordingClient` or any replay client. The test fails if any CLI entry point can import or instantiate it. — AC: *NF-6*
 
-## § 5 — The screen prompt 🤖
+## § 5 — The screen prompt 🔧
 
-- [ ] **5.1** Build the prompt template: full candidate text + numbered criteria list (each criterion carrying its `hasException` flag). The model is asked only whether each criterion is violated (`fails`, `holds`, `indeterminate`) and, for `fails`, the exact verbatim span from the candidate. — AC: *AC-3.1*, *AC-3.2*, *AC-3.3*
-- [ ] **5.2** Offer `indeterminate` explicitly in the prompt as the correct response when the candidate text does not address the criterion. — AC: *AC-3.2*, *AC-4.1*
-- [ ] **5.3** Ensure the prompt never contains the tokens `REFUSED`, `NO_DISQUALIFIER_FOUND`, and never asks the model whether to refuse or how good the candidate is. — AC: *AC-5.7*
-- [ ] **5.4** Parse the model response into an array of `Finding` objects indexed by criterion position. — AC: *AC-3.1*, *AC-3.2*
-- [ ] **5.5** Write tests using recorded fixtures: model returns expected findings; a discriminating pair (one that should fail, one that should hold) is included. No test may assert an empty result. — AC: *AC-3.1*, *AC-3.2*, engineering rule 3.
-- [ ] **5.6** Where a criterion is marked `hasException: true`, the prompt SHALL instruct the model that if it returns `holds` for that criterion **because the stated exception applied**, it must supply `exceptionEvidence` — the verbatim sentence from the candidate showing the exception is met. — AC: *AC-3.7*
-- [ ] **5.7** 🤖 Using a live model call (or a §10 fixture once one exists), assert that for a `hasException` criterion whose exception is met by the candidate, the model supplies `exceptionEvidence` and §6 verification passes rather than demoting. **A stub must not stand in** — a stub tests verification, not elicitation. — AC: *AC-3.7*
-- [ ] **5.8** Write a test asserting the rendered prompt contains neither verdict token and no request for a rating, score or overall judgement. — AC: *AC-5.7*
+> The prompt is built and asserted in this section; the live behaviours it elicits are proved in §10, where fixtures first exist.
+
+- [ ] **5.1** 🔧 Build the prompt template: full candidate text + numbered criteria list (each criterion carrying its `hasException` flag). The model is asked only whether each criterion is violated (`fails`, `holds`, `indeterminate`) and, for `fails`, the exact verbatim span from the candidate. — AC: *AC-3.1*, *AC-3.2*, *AC-3.3*
+- [ ] **5.2** 🔧 Offer `indeterminate` explicitly in the prompt as the correct response when the candidate text does not address the criterion. — AC: *AC-3.2*, *AC-4.1*
+- [ ] **5.3** 🔧 Ensure the prompt never contains the tokens `REFUSED`, `NO_DISQUALIFIER_FOUND`, and never asks the model whether to refuse or how good the candidate is. — AC: *AC-5.7*
+- [ ] **5.4** 🔧 Parse the model response into an array of `Finding` objects indexed by criterion position. — AC: *AC-3.1*, *AC-3.2*
+- [ ] **5.6** 🔧 Where a criterion is marked `hasException: true`, the prompt SHALL instruct the model that if it returns `holds` for that criterion **because the stated exception applied**, it must supply `exceptionEvidence` — the verbatim sentence from the candidate showing the exception is met. — AC: *AC-3.7*
+- [ ] **5.8** 🔧 Write a test asserting the rendered prompt contains neither verdict token and no request for a rating, score or overall judgement. — AC: *AC-5.7*
 
 ## § 6 — Verification 🔧
 
@@ -82,11 +82,15 @@
 
 ## § 10 — Corpus proof 🤖
 
+> Tasks 10.6 and 10.7 were deferred from §5 because they require a live call or a captured fixture; neither exists before §10. They are the first tests to prove the prompt **elicits** what the spec requires, as opposed to proving the parser handles it.
+
 - [ ] **10.1** Prepare at least two real candidate texts: one that should be REFUSED (contains a disqualifying match) and one that should be NO_DISQUALIFIER_FOUND. Seed data must contain the thing being detected. — AC: *AC-3.1*, engineering rule 4.
 - [ ] **10.2** Run end-to-end screens against the live model. Verify the full pipeline: criteria load → candidate accept → model call → verification → verdict → render → record. — AC: *AC-3.1*, *AC-3.4*, *AC-5.1*, *AC-7.1*
 - [ ] **10.3** Capture the request/response pairs as fixtures via `RecordingClient`. Label them as offline test data only. — AC: *NF-3*
 - [ ] **10.4** Write fixture-based regression tests using the captured pairs: confirm the pipeline reproduces the same verdict deterministically from recorded model output. — AC: *AC-3.4*, *AC-5.1*, engineering rule 3.
 - [ ] **10.5** Document cost per screen (tokens, estimated price) and rate-limit observations in the README. — AC: *NF-4*
+- [ ] **10.6** Write tests using recorded fixtures: model returns expected findings; a discriminating pair (one that should fail, one that should hold) is included. No test may assert an empty result. *Deferred from §5 because it requires a live call or a captured fixture; neither exists before §10.* — AC: *AC-3.1*, *AC-3.2*, engineering rule 3.
+- [ ] **10.7** 🤖 Using a live model call (or a captured fixture), assert that for a `hasException` criterion whose exception is met by the candidate, the model supplies `exceptionEvidence` and §6 verification passes rather than demoting. **A stub must not stand in** — a stub tests verification, not elicitation. *Deferred from §5 because it requires a live call or a captured fixture; neither exists before §10.* — AC: *AC-3.7*
 
 ---
 

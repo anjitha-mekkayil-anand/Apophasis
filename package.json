@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
+    "typecheck": "tsc --noEmit && tsc --project tsconfig.test-support.json",
     "test": "vitest --run",
     "start": "tsx src/cli.ts"
   },
