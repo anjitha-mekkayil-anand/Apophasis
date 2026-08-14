@@ -13,7 +13,7 @@
  */
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { join, extname } from 'node:path';
+import { join, extname, basename } from 'node:path';
 import { CandidateAcceptError } from './errors.js';
 
 const CANDIDATES_DIR = 'candidates';
@@ -127,7 +127,7 @@ export async function acceptCandidate(
     label,
     ingestedAt: now.toISOString(),
     sourceExtension: ext,
-    sourceFileName: filePath.split('/').pop() ?? filePath,
+    sourceFileName: basename(filePath),
     byteLength: rawBytes.length,
   };
 

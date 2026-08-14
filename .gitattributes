@@ -1,0 +1,10 @@
+# Line endings are load-bearing here: criteria.yaml is hashed to produce the
+# criteria version recorded on every screen, and candidate text forms part of
+# model requests that recorded fixtures are matched against. A CRLF checkout
+# on Windows changes those bytes.
+* text=auto eol=lf
+
+# Belt and braces for the byte-sensitive paths: never convert these at all.
+criteria.yaml -text
+examples/** -text
+test-support/fixtures/** -text
