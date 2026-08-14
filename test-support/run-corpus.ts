@@ -30,7 +30,7 @@ async function main() {
   try {
     const refusedResult = await runPipeline(
       recordingClient,
-      'test-support/corpus/refused-candidate.txt',
+      'examples/senior-platform-reliability-role.txt',
       'senior-platform-reliability-finserv',
     );
     console.log(`Screen ID: ${refusedResult.screenId}`);
@@ -56,7 +56,7 @@ async function main() {
   try {
     const cleanResult = await runPipeline(
       recordingClient,
-      'test-support/corpus/clean-candidate.txt',
+      'examples/staff-architect-distributed-role.txt',
       'staff-architect-distributed',
     );
     console.log(`Screen ID: ${cleanResult.screenId}`);

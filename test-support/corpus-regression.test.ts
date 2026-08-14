@@ -20,7 +20,7 @@ import { loadCriteriaFromBuffer } from '../src/criteria.js';
 import type { RecordedFixture } from './recording-client.js';
 
 const FIXTURES_DIR = 'test-support/fixtures';
-const CORPUS_DIR = 'test-support/corpus';
+const CORPUS_DIR = 'examples';
 
 async function loadFixture(name: string): Promise<RecordedFixture> {
   const raw = await readFile(join(FIXTURES_DIR, name), 'utf-8');
@@ -33,7 +33,7 @@ describe('corpus regression — §10', () => {
       const fixture = await loadFixture('fixture-0000.json');
       const criteriaBytes = await readFile('criteria.yaml');
       const { criteria } = loadCriteriaFromBuffer(criteriaBytes);
-      const candidateBytes = await readFile(join(CORPUS_DIR, 'refused-candidate.txt'));
+      const candidateBytes = await readFile(join(CORPUS_DIR, 'senior-platform-reliability-role.txt'));
       const candidateText = getCandidateText(candidateBytes);
 
       const findings = parseModelResponse(fixture.response, criteria.length);
@@ -50,7 +50,7 @@ describe('corpus regression — §10', () => {
       const fixture = await loadFixture('fixture-0001.json');
       const criteriaBytes = await readFile('criteria.yaml');
       const { criteria } = loadCriteriaFromBuffer(criteriaBytes);
-      const candidateBytes = await readFile(join(CORPUS_DIR, 'clean-candidate.txt'));
+      const candidateBytes = await readFile(join(CORPUS_DIR, 'staff-architect-distributed-role.txt'));
       const candidateText = getCandidateText(candidateBytes);
 
       const findings = parseModelResponse(fixture.response, criteria.length);
@@ -91,12 +91,12 @@ describe('corpus regression — §10', () => {
       const { criteria } = loadCriteriaFromBuffer(criteriaBytes);
 
       const findings0 = parseModelResponse(fixture0.response, criteria.length);
-      const candidateBytes0 = await readFile(join(CORPUS_DIR, 'refused-candidate.txt'));
+      const candidateBytes0 = await readFile(join(CORPUS_DIR, 'senior-platform-reliability-role.txt'));
       const verified0 = verifyFindings(findings0, getCandidateText(candidateBytes0), criteria);
       const verdict0 = assembleVerdict(verified0, criteria);
 
       const findings1 = parseModelResponse(fixture1.response, criteria.length);
-      const candidateBytes1 = await readFile(join(CORPUS_DIR, 'clean-candidate.txt'));
+      const candidateBytes1 = await readFile(join(CORPUS_DIR, 'staff-architect-distributed-role.txt'));
       const verified1 = verifyFindings(findings1, getCandidateText(candidateBytes1), criteria);
       const verdict1 = assembleVerdict(verified1, criteria);
 
@@ -123,7 +123,7 @@ describe('corpus regression — §10', () => {
       const fixture = await loadFixture('fixture-0001.json');
       const criteriaBytes = await readFile('criteria.yaml');
       const { criteria } = loadCriteriaFromBuffer(criteriaBytes);
-      const candidateBytes = await readFile(join(CORPUS_DIR, 'clean-candidate.txt'));
+      const candidateBytes = await readFile(join(CORPUS_DIR, 'staff-architect-distributed-role.txt'));
       const candidateText = getCandidateText(candidateBytes);
 
       const findings = parseModelResponse(fixture.response, criteria.length);
