@@ -13,7 +13,7 @@ Apophasis screens a candidate text against an ordered set of disqualifying rules
 
 The model produces findings. Code produces the verdict. A prompt that says "never recommend" is a request. A verdict type with no field to hold a recommendation is a guarantee.
 
-> The output is the interface. Every screen is markdown on disk, readable in any editor without this application — which is also how you check that it did what it says it did.
+> A screening decision you need to re-read six months later — why this was refused, on what evidence, under which version of the rules — has to survive as a file, not as a memory of terminal output. Every screen is markdown on disk. You can open it in any editor, without this application, and see exactly what happened and why.
 
 ---
 
@@ -50,7 +50,7 @@ No code from the hand-applied practice exists; it was a document and a habit. Fi
 
 Requires Node.js 20+ and an Anthropic API key.
 
-**Tested on:** Linux (Node 22) and the Kiro Web environment. Not yet exercised on Windows or macOS. It is plain Node with no native dependencies, so no platform-specific behaviour is expected — but this is what has actually been run.
+**Tested on:** Linux x86_64, Node 22, inside the Kiro Web sandbox. No Windows or macOS run has been performed. The application uses no native modules and no platform-specific APIs beyond the filesystem — but only what has been run is stated here.
 
 ```bash
 git clone https://github.com/anjitha-mekkayil-anand/Apophasis.git
@@ -174,7 +174,7 @@ PRs produced:
 
 ## Human direction
 
-Decisions a human made that the specs and code do not show on their own:
+The interesting design decisions in this project were about what the system is *forbidden* to do — refuse to score, refuse to endorse, refuse to let the model choose the deciding criterion. Building a feature is one kind of work; making a guarantee structural (no field to populate, no token to see, no path to reach) is a different kind. These are the human choices that shaped it:
 
 - **The project was chosen from four candidates**, generated against explicit constraints and narrowed on originality and on being buildable in the time available.
 - **The name.** Chosen from three, on the principle of naming the mechanism (defining by negation) rather than a synonym for it.
