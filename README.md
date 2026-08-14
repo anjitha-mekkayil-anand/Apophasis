@@ -50,6 +50,8 @@ No code from the hand-applied practice exists; it was a document and a habit. Fi
 
 Requires Node.js 20+ and an Anthropic API key.
 
+**Tested on:** Linux (Node 22) and the Kiro Web environment. Not yet exercised on Windows or macOS. It is plain Node with no native dependencies, so no platform-specific behaviour is expected — but this is what has actually been run.
+
 ```bash
 git clone https://github.com/anjitha-mekkayil-anand/Apophasis.git
 cd Apophasis
@@ -167,6 +169,21 @@ PRs produced:
 8. [§8 rendering](https://github.com/anjitha-mekkayil-anand/Apophasis/pull/9)
 9. [§9 history + banned-list correction](https://github.com/anjitha-mekkayil-anand/Apophasis/pull/10)
 10. [§10 corpus proof](https://github.com/anjitha-mekkayil-anand/Apophasis/pull/11)
+
+---
+
+## Human direction
+
+Decisions a human made that the specs and code do not show on their own:
+
+- **The project was chosen from four candidates**, generated against explicit constraints and narrowed on originality and on being buildable in the time available.
+- **The name.** Chosen from three, on the principle of naming the mechanism (defining by negation) rather than a synonym for it.
+- **The governing decision — the model produces findings, code produces the verdict.** The model never sees the verdict tokens and is never asked whether to refuse. That is a human choice about where authority sits, and everything else follows from it.
+- **`disqualifying` versus `preference` is a human distinction the system cannot infer.** So is which criterion decides — resolved by author-declared order in the criteria file, never by the model.
+- **A criterion was written wrong and the error was caught before it shipped.** AC-3.7 demanded evidence for something the prompt never asked for, which would have marked every clean candidate incomplete, permanently, with nothing appearing broken. The correction and its reasoning are in PR #7.
+- **A task was marked complete, then un-marked**, because its headline output had never actually rendered. Both states are in the commit history on the `feat/corpus-fix-and-readme` branch, on purpose.
+- **The demo corpus was found to be non-deterministic and was not tuned until it looked right.** A criterion requiring interpretation (`legacy-only`) was evaluated differently across runs; the fix was to add a criterion (`people-management`) whose violation is stated outright in the text, and to document the instability rather than hide it.
+- **The application was found not to run through its own documented interface**, and that was fixed rather than the documentation being quietly adjusted to match.
 
 ---
 
